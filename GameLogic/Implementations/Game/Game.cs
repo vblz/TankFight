@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameLogic.Enums;
 using GameLogic.Implementations.Exceptions;
@@ -22,11 +23,16 @@ namespace GameLogic.Implementations.Game
 		public IGameState State => new GameState(this.mapAdapter.GetState(),
 			this.bulletService.Bullets);
 
-		public void Tick(IUserMove[] moves)
+		public void Tick(IReadOnlyCollection<IUserMove> moves)
 		{
+			var random = new Random();
+			var shuffledMoves = moves
+				.OrderBy(x => random.Next())
+				.ToList();
+			
 			for (int i = 0; i < this.actionPoints; ++i)
 			{
-				var stageMoves = moves
+				var stageMoves = shuffledMoves
 					.Where(x => x.Actions.Count > i && x.Actions[i] != null)
 					.Select(x => new { x.UserId, Action = x.Actions[i] })
 					.ToArray();
