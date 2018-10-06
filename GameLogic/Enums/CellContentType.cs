@@ -5,6 +5,7 @@
 		Tank,
 		Barrier,
 		NotDestroyable,
+		Water,
 		Spawn
 	}
 }

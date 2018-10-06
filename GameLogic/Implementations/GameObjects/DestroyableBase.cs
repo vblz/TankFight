@@ -13,7 +13,12 @@ namespace GameLogic.Implementations.GameObjects
 		
 		public abstract CellContentType Type { get; }
 		
-		public void ProcessShoot() => this.health.ProcessShoot();
+		public BulletCollisionResult ProcessShoot()
+		{
+			this.health.ProcessShoot();
+			
+			return BulletCollisionResult.Destroy;
+		}
 
 		public DestroyableBase(IHealth health)
 		{

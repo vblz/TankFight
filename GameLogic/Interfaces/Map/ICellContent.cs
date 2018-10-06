@@ -7,6 +7,6 @@ namespace GameLogic.Interfaces.Map
 		bool IsAlive { get; }
 		byte HealthPoint { get; }
 		CellContentType Type { get; }
-		void ProcessShoot();
+		BulletCollisionResult ProcessShoot();
 	}
 }

@@ -104,6 +104,10 @@ namespace GameLogic.Implementations.Services
 						content = new NotdestroyableBarrier();
 						break;
 					
+					case CellContentType.Water:
+						content = new Water();
+						break;
+					
 					case CellContentType.Spawn:
 						content = new SpawnMark();
 						break;

@@ -60,9 +60,12 @@ namespace GameLogic.Implementations.Services
 				var onCell = this.mapAdapter.GetCell(bulletRecord.Value.Coordinates);
 				if (!onCell.IsEmpty)
 				{
-					onCell.Content.ProcessShoot();
-					// Как было бы удобно удалять внутри foreach
-					collidedBulletsKeys.AddFirst(bulletRecord.Key);
+					var collisionResult = onCell.Content.ProcessShoot();
+					if (collisionResult == BulletCollisionResult.Destroy)
+					{
+						// Как было бы удобно удалять внутри foreach
+						collidedBulletsKeys.AddFirst(bulletRecord.Key);	
+					}
 				}
 			}
 

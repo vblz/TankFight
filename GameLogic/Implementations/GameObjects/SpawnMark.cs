@@ -9,7 +9,7 @@ namespace GameLogic.Implementations.GameObjects
 		public byte HealthPoint => 0;
 		public CellContentType Type => CellContentType.Spawn;
 		
-		public void ProcessShoot()
+		public BulletCollisionResult ProcessShoot()
 		{
 			throw new System.NotSupportedException();
 		}
