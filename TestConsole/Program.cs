@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using GameLogic.Enums;
 using GameLogic.Implementations.Game;
 using GameLogic.Implementations.Public;
 using GameLogic.Interfaces.Public;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TestConsole
 {
@@ -94,45 +97,75 @@ namespace TestConsole
 
 		private static IMapInfo GenerateMapInfo()
 		{
+			var data =  JsonConvert.DeserializeObject<JObject>(File.ReadAllText(@"d:/objects.json"));
 			var map = new MapInfo
 			{
-				Height = Height,
-				Width = Width
+				Height = data["Height"].Value<byte>(),
+				Width = data["Width"].Value<byte>(),
 			};
 
-			var objects = new List<ICellContentInfo>();
-
-			for (int i = 0; i < Width; ++i)
+			List<ICellContentInfo> objects = new List<ICellContentInfo>();
+			foreach (var mapObject in data["MapObjects"].Children())
 			{
-				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
+				var x = mapObject["Coordinates"]["X"].Value<int>();
+				var y = mapObject["Coordinates"]["Y"].Value<int>();
+				switch (mapObject["CellContentType"].Value<string>())
+				{
+					case "Barrier":
+						objects.Add(CellContentInfo.House(x, y));
+						break;
+					
+					case "NotDestroyable":
+						objects.Add(CellContentInfo.Mountain(x, y));
+						break;
+				}
 			}
 
-			for (int i = (Height - 1) * Width; i < Width * Height; ++i)
-			{
-				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-			}
 
-			for (int i = Width; i < Width * Height; i += Width)
-			{
-				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-			}
+			objects.Add(CellContentInfo.Spawn(1, 1));
+			objects.Add(CellContentInfo.Spawn(1, 2));
 
-			for (int i = Width * 2 - 1; i < Width * Height; i += Width)
-			{
-				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-			}
-
-			for (int i = 6; i < 16; ++i)
-			{
-				objects.Add(CellContentInfo.Mountain(1, i));
-			}
-
-			objects.Add(CellContentInfo.House(2, 3));
-			objects.Add(CellContentInfo.Spawn(10, 10));
-			objects.Add(CellContentInfo.Spawn(12, 12));
-
-			map.MapObjects = objects.ToArray();
+			map.MapObjects = objects.AsReadOnly();
 			return map;
+//			var map = new MapInfo
+//			{
+//				Height = Height,
+//				Width = Width
+//			};
+//
+//			var objects = new List<ICellContentInfo>();
+//
+//			for (int i = 0; i < Width; ++i)
+//			{
+//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
+//			}
+//
+//			for (int i = (Height - 1) * Width; i < Width * Height; ++i)
+//			{
+//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
+//			}
+//
+//			for (int i = Width; i < Width * Height; i += Width)
+//			{
+//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
+//			}
+//
+//			for (int i = Width * 2 - 1; i < Width * Height; i += Width)
+//			{
+//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
+//			}
+//
+//			for (int i = 6; i < 16; ++i)
+//			{
+//				objects.Add(CellContentInfo.Mountain(1, i));
+//			}
+//
+//			objects.Add(CellContentInfo.House(2, 3));
+//			objects.Add(CellContentInfo.Spawn(10, 10));
+//			objects.Add(CellContentInfo.Spawn(12, 12));
+//
+//			map.MapObjects = objects.ToArray();
+//			return map;
 		}
 
 		private static string RenderGame(IGameState state)
