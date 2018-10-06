@@ -26,22 +26,24 @@ namespace GameLogic.Implementations.Services
 
 			for (int i = 0; i < map.Length; ++i)
 			{
-				if (map[i] != null) continue;
-				// у карты по границе или уже стоят неубиваемые блоки или их надо расставить
-				if (IsBorder(i, map.Length, width))
+				if (map[i] != null)
 				{
-					map[i] = new Cell(new NotdestroyableBarrier(), Coordinates.FromIndex(i, width));
+					continue;
 				}
-				else
+				
+				map[i] = new Cell(Coordinates.FromIndex(i, width));
+				
+				// у карты по границе или уже стоят неубиваемые блоки или их надо расставить
+				if (IsIndexOnBorder(i, map.Length, width))
 				{
-					map[i] = new Cell(Coordinates.FromIndex(i, width));
+					map[i].Put(new NotdestroyableBarrier());
 				}
 			}
 
 			return new Battlefield(map, width);
 		}
 
-		private static bool IsBorder(int index, int cellsCount, int widht)
+		private static bool IsIndexOnBorder(int index, int cellsCount, int widht)
 		{
 			return index < widht // верхняя
 			       || index >= cellsCount - widht // нижняя
@@ -49,35 +51,28 @@ namespace GameLogic.Implementations.Services
 			       || (index + 1) % widht == 0; // правая
 		}
 
+		private static bool IsCellNotDestroyable(ICell cell)
+		{
+			return cell?.Content?.Type != CellContentType.NotDestroyable;
+		}
+
 		private static bool IsBordered(IReadOnlyList<ICell> map, int width)
 		{
-			for (int i = 0; i < width; ++i)
+			// верх и низ, лево и право равны между собой, поэтому пробегаемся в одном цикле
+			
+			// горизонтали
+			for (int top = 0, bottom = map.Count - width; top < width; ++top, ++bottom)
 			{
-				if (map[i]?.Content?.Type != CellContentType.NotDestroyable)
+				if (!IsCellNotDestroyable(map[top]) || !IsCellNotDestroyable(map[bottom]))
 				{
 					return false;
 				}
 			}
-
-			for (int i = map.Count - width; i < map.Count; ++i)
+			
+			// вертикали, 0 и последнюю строчку не проверяем, так как проверили выше
+			for (int left = width, right = width * 2 - 1; left < map.Count - width; left += width, right += width)
 			{
-				if (map[i]?.Content?.Type != CellContentType.NotDestroyable)
-				{
-					return false;
-				}
-			}
-
-			for (int i = width; i < map.Count; i += width)
-			{
-				if (map[i]?.Content?.Type != CellContentType.NotDestroyable)
-				{
-					return false;
-				}
-			}
-
-			for (int i = width * 2 - 1; i < map.Count; i += width)
-			{
-				if (map[i]?.Content?.Type != CellContentType.NotDestroyable)
+				if (!IsCellNotDestroyable(map[left]) || !IsCellNotDestroyable(map[right]))
 				{
 					return false;
 				}

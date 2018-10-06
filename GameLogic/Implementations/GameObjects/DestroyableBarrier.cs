@@ -1,24 +1,14 @@
 ﻿using GameLogic.Enums;
 using GameLogic.Interfaces.Game;
-using GameLogic.Interfaces.Map;
 
 namespace GameLogic.Implementations.GameObjects
 {
-	
-	internal sealed class DestroyableBarrier : ICellContent
+	internal sealed class DestroyableBarrier : DestroyableBase
 	{
-		private readonly IHealth health;
+		public override CellContentType Type => CellContentType.Barrier;
 
-		public bool IsAlive => this.health.IsAlive;
-		public byte HealthPoint => this.health.HealthPoint;
-		
-		public CellContentType Type => CellContentType.Barrier;
-		
-		public void ProcessShoot() => this.health.ProcessShoot();
-
-		public DestroyableBarrier(IHealth health)
+		public DestroyableBarrier(IHealth health) : base(health)
 		{
-			this.health = health;
 		}
 	}
 }

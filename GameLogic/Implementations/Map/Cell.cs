@@ -34,8 +34,8 @@ namespace GameLogic.Implementations.Map
 
 		public Cell(ICellContent content, Coordinates coords)
 		{
-			this.Content = content;
 			this.Coordinates = coords;
+			this.Put(content);
 		}
 
 		public Cell(Coordinates coords) : this(null, coords)

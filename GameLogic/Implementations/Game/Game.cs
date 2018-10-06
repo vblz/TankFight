@@ -28,16 +28,13 @@ namespace GameLogic.Implementations.Game
 			var random = new Random();
 			var shuffledMoves = moves
 				.OrderBy(x => random.Next())
-				.ToList();
+				.ToArray(); // ToArray - что бы не каждую итерацию перемешивались, а только перед началом.
 			
 			for (int i = 0; i < this.actionPoints; ++i)
 			{
-				var stageMoves = shuffledMoves
+				foreach (var move in shuffledMoves
 					.Where(x => x.Actions.Count > i && x.Actions[i] != null)
-					.Select(x => new { x.UserId, Action = x.Actions[i] })
-					.ToArray();
-
-				foreach (var move in stageMoves)
+					.Select(x => new { x.UserId, Action = x.Actions[i] }))
 				{
 					try
 					{

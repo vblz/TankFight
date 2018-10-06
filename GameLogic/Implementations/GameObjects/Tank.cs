@@ -4,21 +4,14 @@ using GameLogic.Interfaces.Map;
 
 namespace GameLogic.Implementations.GameObjects
 {
-	internal sealed class Tank : ICellContent
+	internal sealed class Tank : DestroyableBase
 	{
-		private readonly IHealth health;
-		public bool IsAlive => this.health.IsAlive;
-		public byte HealthPoint => this.health.HealthPoint;
-		
-		public CellContentType Type => CellContentType.Tank;
+		public override CellContentType Type => CellContentType.Tank;
 		
 		public string UserId { get; }
-		
-		public void ProcessShoot() => this.health.ProcessShoot();
 
-		public Tank(IHealth health, string userId)
+		public Tank(IHealth health, string userId) : base(health)
 		{
-			this.health = health;
 			this.UserId = userId;
 		}
 	}
