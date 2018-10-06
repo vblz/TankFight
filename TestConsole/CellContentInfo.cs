@@ -20,11 +20,6 @@ namespace TestConsole
 			};
 		}
 
-		public static CellContentInfo Mountain(Coordinates coord)
-		{
-			return Mountain(coord.X, coord.Y);
-		}
-
 		public static CellContentInfo Spawn(int x, int y)
 		{
 			return new CellContentInfo
@@ -35,13 +30,23 @@ namespace TestConsole
 			};
 		}
 
-		public static CellContentInfo House(int x, int y)
+		public static CellContentInfo Barrier(int x, int y, byte health)
 		{
 			return new CellContentInfo
 			{
 				Coordinates = new Coordinates(x, y),
-				HealthCount = 1,
+				HealthCount = health,
 				Type = CellContentType.Barrier
+			};
+		}
+
+		public static CellContentInfo Water(int x, int y)
+		{
+			return new CellContentInfo
+			{
+				Coordinates = new Coordinates(x, y),
+				HealthCount = 0,
+				Type = CellContentType.Water
 			};
 		}
 	}

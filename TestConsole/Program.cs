@@ -109,14 +109,24 @@ namespace TestConsole
 			{
 				var x = mapObject["Coordinates"]["X"].Value<int>();
 				var y = mapObject["Coordinates"]["Y"].Value<int>();
+				
 				switch (mapObject["CellContentType"].Value<string>())
 				{
 					case "Barrier":
-						objects.Add(CellContentInfo.House(x, y));
+						byte health = mapObject["HealthCount"].Value<byte>();
+						objects.Add(CellContentInfo.Barrier(x, y, health));
 						break;
 					
 					case "NotDestroyable":
 						objects.Add(CellContentInfo.Mountain(x, y));
+						break;
+					
+					case "Spawn":
+						objects.Add(CellContentInfo.Spawn(x, y));
+						break;
+					
+					case "Water":
+						objects.Add(CellContentInfo.Water(x, y));
 						break;
 				}
 			}
@@ -193,13 +203,16 @@ namespace TestConsole
 								addedChar = cell.HealthCount.ToString()[0];
 								break;
 							case CellContentType.Barrier:
-								addedChar = 'b';
+								addedChar = cell.HealthCount == 2 ? 'h' : 't';
 								break;
 							case CellContentType.NotDestroyable:
 								addedChar = 'n';
 								break;
 							case CellContentType.Spawn:
 								addedChar = 's';
+								break;
+							case CellContentType.Water:
+								addedChar = 'w';
 								break;
 							default:
 								throw new ArgumentOutOfRangeException();
