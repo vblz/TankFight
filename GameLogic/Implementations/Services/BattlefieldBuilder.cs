@@ -21,7 +21,7 @@ namespace GameLogic.Implementations.Services
 			if (!IsBordered(map, width))
 			{
 				map = FillMap(mapInfo, 1);
-				++width;
+				width += 2;
 			}
 
 			for (int i = 0; i < map.Length; ++i)
@@ -88,7 +88,7 @@ namespace GameLogic.Implementations.Services
 
 		private static ICell[] FillMap(IMapInfo mapInfo, int increaseByEachSide)
 		{
-			var result = new ICell[(mapInfo.Width + increaseByEachSide) * (mapInfo.Height + increaseByEachSide)];
+			var result = new ICell[(mapInfo.Width + increaseByEachSide * 2) * (mapInfo.Height + increaseByEachSide * 2)];
 			var mapWidth = mapInfo.Width + increaseByEachSide * 2;
 
 			foreach (var cell in mapInfo.MapObjects)
