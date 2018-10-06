@@ -26,8 +26,7 @@ namespace GameLogic.Implementations.Services
 			{
 				this.CheckHits();
 				this.MoveBullets();
-				// TODO подумать, может быть, тут имеет смысл еще раз проверять попадания
-				// что бы нельзя было избежать смерти, если пуля на твою клетку попала
+				this.CheckHits();
 			}
 		}
 
