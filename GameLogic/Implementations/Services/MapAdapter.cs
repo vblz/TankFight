@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using GameLogic.Enums;
 using GameLogic.Implementations.Exceptions;
 using GameLogic.Implementations.Game;
@@ -45,20 +46,11 @@ namespace GameLogic.Implementations.Services
 			return new MoveDirection(userCell, toCell);
 		}
 
-		public ICell GetCell(Coordinates coordinates)
-		{
-			return this.map.GetCell(coordinates);
-		}
+		public ICell GetCell(Coordinates coordinates) => this.map.GetCell(coordinates);
 
-		public IReadOnlyCollection<ICellContentInfo> GetState()
-		{
-			return this.map.GetState();
-		}
+		public IReadOnlyCollection<ICellContentInfo> GetState() => this.map.GetState();
 
-		public void ClearDeadCells()
-		{
-			this.map.ClearDeadCells();
-		}
+		public IReadOnlyCollection<Coordinates> ClearDeadCells() => this.map.ClearDeadCells();
 
 		public MapAdapter(IMap map)
 		{

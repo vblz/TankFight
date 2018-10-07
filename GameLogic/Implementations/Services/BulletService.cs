@@ -20,17 +20,31 @@ namespace GameLogic.Implementations.Services
 			.ToList()
 			.AsReadOnly();
 		
-		public void Process()
+		public IDestroyedInfo Process()
 		{
+			var destroyedBullets = new Dictionary<string, Coordinates>();
+			var destroyedObjects = new List<Coordinates>();
+			
 			for (byte i = 0; i < this.bulletActionPointCount; ++i)
 			{
-				this.CheckHits();
+				var firstObjects = this.CheckHits();
 				this.MoveBullets();
-				this.CheckHits();
+				var secondObjects = this.CheckHits();
+
+				destroyedBullets = destroyedBullets
+					.Concat(firstObjects.DestroyedBullets)
+					.Concat(secondObjects.DestroyedBullets)
+					.GroupBy(x => x.Key)
+					.ToDictionary(x => x.Key, x => x.First().Value);
+				
+				destroyedObjects.AddRange(firstObjects.DestroyedObjects);
+				destroyedObjects.AddRange(secondObjects.DestroyedObjects);
 			}
+			
+			return new DestroyedInfo(destroyedBullets, destroyedObjects);
 		}
 
-		public void CreateBullet(string userId, Direction direction)
+		public void UserShoot(string userId, Direction direction)
 		{
 			var moveDirection = this.mapAdapter.MoveDirection(userId, direction);
 
@@ -51,7 +65,7 @@ namespace GameLogic.Implementations.Services
 			}
 		}
 
-		private void CheckHits()
+		private IDestroyedInfo CheckHits()
 		{
 			var collidedBulletsKeys = new LinkedList<string>();
 			foreach (var bulletRecord in this.activeBulletsByUsers)
@@ -69,12 +83,17 @@ namespace GameLogic.Implementations.Services
 				}
 			}
 
+			var destroyedBullets = collidedBulletsKeys
+				.ToDictionary(x => x, x => this.activeBulletsByUsers[x].Coordinates);
+
 			foreach (var collidedBulletKey in collidedBulletsKeys)
 			{
 				this.activeBulletsByUsers.Remove(collidedBulletKey);
 			}
 			
-			this.mapAdapter.ClearDeadCells();
+			var destroyedObjects = this.mapAdapter.ClearDeadCells();
+			
+			return new DestroyedInfo(destroyedBullets, destroyedObjects.ToList());
 		}
 
 		public BulletService(IMapAdapter mapAdapter, byte bulletActionPointCount)

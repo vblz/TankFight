@@ -23,6 +23,8 @@ namespace GameLogic.Implementations.Game
 		public IGameState State => new GameState(this.mapAdapter.GetState(),
 			this.bulletService.Bullets);
 
+		public IDestroyedInfo DestroyedObjects { get; private set; }
+
 		public void Tick(IReadOnlyCollection<IUserMove> moves)
 		{
 			var random = new Random();
@@ -47,7 +49,7 @@ namespace GameLogic.Implementations.Game
 					}
 				}
 			
-				this.bulletService.Process();
+				this.DestroyedObjects = this.bulletService.Process();
 			}
 		}
 
@@ -65,7 +67,7 @@ namespace GameLogic.Implementations.Game
 					break;
 				
 				case UserActionType.Shoot:
-					this.bulletService.CreateBullet(userId, action.Direction);
+					this.bulletService.UserShoot(userId, action.Direction);
 					break;
 				
 				default:

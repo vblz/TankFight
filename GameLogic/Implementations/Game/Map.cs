@@ -42,15 +42,16 @@ namespace GameLogic.Implementations.Game
 				.AsReadOnly();
 		}
 
-		public void ClearDeadCells()
+		public IReadOnlyCollection<Coordinates> ClearDeadCells()
 		{
-			foreach (var cell in this.battlefield.Cells)
-			{
-				if (!cell.IsEmpty && !cell.Content.IsAlive)
+			return this.battlefield.Cells
+				.Where(cell => !cell.IsEmpty && !cell.Content.IsAlive)
+				.Select(cell =>
 				{
 					cell.Pop();
-				}
-			}
+					return cell.Coordinates;
+				})
+				.ToList();
 		}
 
 		private ICell GetCellByIndex(int index)

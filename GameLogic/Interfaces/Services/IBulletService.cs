@@ -8,7 +8,8 @@ namespace GameLogic.Interfaces.Services
 	{
 		IReadOnlyCollection<IBulletInfo> Bullets { get; }
 		
-		void Process();
-		void CreateBullet(string userId,  Direction direction);
+		
+		IDestroyedInfo Process();
+		void UserShoot(string userId,  Direction direction);
 	}
 }

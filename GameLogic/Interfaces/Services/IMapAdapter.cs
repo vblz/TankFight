@@ -12,6 +12,6 @@ namespace GameLogic.Interfaces.Services
 		IMoveDirection MoveDirection(string fromUserId, Direction direction);
 		ICell GetCell(Coordinates coordinates);
 		IReadOnlyCollection<ICellContentInfo> GetState();
-		void ClearDeadCells();
+		IReadOnlyCollection<Coordinates> ClearDeadCells();
 	}
 }
