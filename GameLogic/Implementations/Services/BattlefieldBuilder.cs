@@ -53,6 +53,11 @@ namespace GameLogic.Implementations.Services
 
 		private static bool IsCellNotDestroyable(ICell cell)
 		{
+			if (cell == null || cell.Content == null)
+			{
+				return false;
+			}
+			
 			return cell?.Content?.Type != CellContentType.NotDestroyable;
 		}
 
