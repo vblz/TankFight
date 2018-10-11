@@ -6,5 +6,7 @@ namespace GameLogic.Interfaces.Public
 	{
 		IReadOnlyCollection<ICellContentInfo> ContentsInfo { get; }
 		IReadOnlyCollection<IBulletInfo> BulletsInfo { get; }
+		
+		byte ZoneRadius { get; }
 	}
 }

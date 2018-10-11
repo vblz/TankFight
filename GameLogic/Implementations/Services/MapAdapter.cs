@@ -16,6 +16,9 @@ namespace GameLogic.Implementations.Services
 	{
 		private readonly IMap map;
 
+		public byte Height { get; }
+		public byte Width { get; }
+
 		public IMoveDirection MoveDirection(string userId, Direction direction)
 		{
 			if (string.IsNullOrEmpty(userId))
@@ -55,6 +58,8 @@ namespace GameLogic.Implementations.Services
 		public MapAdapter(IMap map)
 		{
 			this.map = map;
+			this.Height = map.Height;
+			this.Width = map.Width;
 		}
 	}
 }

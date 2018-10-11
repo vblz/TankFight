@@ -14,6 +14,9 @@ namespace GameLogic.Implementations.Game
 	{
 		private readonly IBattlefield battlefield;
 
+		public byte Height { get; }
+		public byte Width { get; }
+
 		public ICell GetCell(Coordinates coord)
 		{
 			return this.GetCellByIndex(this.GetIndex(coord));
@@ -72,6 +75,9 @@ namespace GameLogic.Implementations.Game
 			IBattlefieldBuilder battlefieldBuilder,
 			ISpawnService spawnService)
 		{
+			this.Height = creationData.MapInfo.Height;
+			this.Width = creationData.MapInfo.Width;
+			
 			this.battlefield = battlefieldBuilder.Build(creationData.MapInfo);
 			
 			spawnService.Spawn(this.battlefield.Cells, creationData.UserContents);

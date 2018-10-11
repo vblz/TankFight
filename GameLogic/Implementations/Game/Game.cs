@@ -18,10 +18,11 @@ namespace GameLogic.Implementations.Game
 
 		private readonly IMoveService moveService;
 		private readonly IBulletService bulletService;
+		private readonly IZoneService zoneService;
 		private readonly IMapAdapter mapAdapter;
 
 		public IGameState State => new GameState(this.mapAdapter.GetState(),
-			this.bulletService.Bullets);
+			this.bulletService.Bullets, this.zoneService.Radius);
 
 		public IDestroyedInfo DestroyedObjects { get; private set; }
 
@@ -31,6 +32,9 @@ namespace GameLogic.Implementations.Game
 			var shuffledMoves = moves
 				.OrderBy(x => random.Next())
 				.ToArray(); // ToArray - что бы не каждую итерацию перемешивались, а только перед началом.
+			
+			var destroyedBullets = new Dictionary<string, Coordinates>();
+			var destroyedObjects = new List<Coordinates>();
 			
 			for (int i = 0; i < this.actionPoints; ++i)
 			{
@@ -49,8 +53,20 @@ namespace GameLogic.Implementations.Game
 					}
 				}
 			
-				this.DestroyedObjects = this.bulletService.Process();
+				var destroyedInfo = this.bulletService.Process();
+				destroyedObjects.AddRange(destroyedInfo.DestroyedObjects);
+				
+				destroyedBullets = destroyedBullets
+					.Concat(destroyedInfo.DestroyedBullets)
+					.GroupBy(x => x.Key)
+					.ToDictionary(x => x.Key, x => x.First().Value);
 			}
+
+			var destryoedByZone = this.zoneService.Process();
+			
+			destroyedObjects.AddRange(destryoedByZone);
+
+			this.DestroyedObjects = new DestroyedInfo(destroyedBullets, destroyedObjects);
 		}
 
 		private void ProcessUserMove(string userId, IAction action)
@@ -100,6 +116,7 @@ namespace GameLogic.Implementations.Game
 			this.mapAdapter = new MapAdapter(map);
 			this.bulletService = new BulletService(this.mapAdapter, settings.BulletActionPoints);
 			this.moveService = new MoveService(this.mapAdapter);
+			this.zoneService = new ZoneService(this.mapAdapter, settings.ZoneRadius);
 		}
 	}
 }

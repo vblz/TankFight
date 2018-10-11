@@ -137,50 +137,12 @@ namespace TestConsole
 
 			map.MapObjects = objects.AsReadOnly();
 			return map;
-//			var map = new MapInfo
-//			{
-//				Height = Height,
-//				Width = Width
-//			};
-//
-//			var objects = new List<ICellContentInfo>();
-//
-//			for (int i = 0; i < Width; ++i)
-//			{
-//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-//			}
-//
-//			for (int i = (Height - 1) * Width; i < Width * Height; ++i)
-//			{
-//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-//			}
-//
-//			for (int i = Width; i < Width * Height; i += Width)
-//			{
-//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-//			}
-//
-//			for (int i = Width * 2 - 1; i < Width * Height; i += Width)
-//			{
-//				objects.Add(CellContentInfo.Mountain(Coordinates.FromIndex(i, Width)));
-//			}
-//
-//			for (int i = 6; i < 16; ++i)
-//			{
-//				objects.Add(CellContentInfo.Mountain(1, i));
-//			}
-//
-//			objects.Add(CellContentInfo.House(2, 3));
-//			objects.Add(CellContentInfo.Spawn(10, 10));
-//			objects.Add(CellContentInfo.Spawn(12, 12));
-//
-//			map.MapObjects = objects.ToArray();
-//			return map;
 		}
 
 		private static string RenderGame(IGameState state)
 		{
 			var sb = new StringBuilder(Width * Height + Height * Environment.NewLine.Length);
+			sb.AppendFormat("Zone R: {0}", state.ZoneRadius);
 			for (int y = Height; y >=0; --y)
 			{
 				for (int x = 0; x < Width; ++x)

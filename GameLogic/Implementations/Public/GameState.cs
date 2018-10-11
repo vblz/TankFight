@@ -7,11 +7,15 @@ namespace GameLogic.Implementations.Public
 	{
 		public IReadOnlyCollection<ICellContentInfo> ContentsInfo { get; }
 		public IReadOnlyCollection<IBulletInfo> BulletsInfo { get; }
+		public byte ZoneRadius { get; }
 
-		public GameState(IReadOnlyCollection<ICellContentInfo> contentsInfo, IReadOnlyCollection<IBulletInfo> bulletsInfo)
+		public GameState(IReadOnlyCollection<ICellContentInfo> contentsInfo,
+			IReadOnlyCollection<IBulletInfo> bulletsInfo,
+			byte zoneRadius)
 		{
 			this.ContentsInfo = contentsInfo;
 			this.BulletsInfo = bulletsInfo;
+			this.ZoneRadius = zoneRadius;
 		}
 	}
 }

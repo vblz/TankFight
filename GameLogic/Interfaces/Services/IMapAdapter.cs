@@ -9,6 +9,9 @@ namespace GameLogic.Interfaces.Services
 {
 	internal interface IMapAdapter
 	{
+		byte Height { get; }
+		byte Width { get; }
+		
 		IMoveDirection MoveDirection(string fromUserId, Direction direction);
 		ICell GetCell(Coordinates coordinates);
 		IReadOnlyCollection<ICellContentInfo> GetState();

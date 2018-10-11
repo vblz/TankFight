@@ -5,5 +5,6 @@
 		byte TankHealthPoint { get; }
 		byte ActionPoints { get; }
 		byte BulletActionPoints { get; }
+		byte ZoneRadius { get; }
 	}
 }
