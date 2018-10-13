@@ -39,7 +39,7 @@ namespace GameLogic.Implementations.Game
 		{
 			return this.battlefield.Cells
 				.Where(x => !x.IsEmpty)
-				.Select(x => new CellContentInfo(x.Coordinates, x.Content.HealthPoint, x.Content.Type))
+				.Select(x => new CellContentInfo(x))
 				.Cast<ICellContentInfo>()
 				.ToList()
 				.AsReadOnly();

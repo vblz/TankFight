@@ -117,6 +117,8 @@ namespace GameLogic.Implementations.Game
 			this.bulletService = new BulletService(this.mapAdapter, settings.BulletActionPoints);
 			this.moveService = new MoveService(this.mapAdapter);
 			this.zoneService = new ZoneService(this.mapAdapter, settings.ZoneRadius);
+			
+			this.DestroyedObjects = new DestroyedInfo(new Dictionary<string, Coordinates>(), new Coordinates[0]);
 		}
 	}
 }

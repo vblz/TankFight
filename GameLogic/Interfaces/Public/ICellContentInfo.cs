@@ -8,5 +8,7 @@ namespace GameLogic.Interfaces.Public
 		Coordinates Coordinates { get; }
 		byte HealthCount { get; }
 		CellContentType Type { get; }
+		// FIXME костыль, убрать
+		string UserId { get; set; }
 	}
 }

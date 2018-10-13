@@ -2,13 +2,14 @@
 using GameLogic.Implementations.Public;
 using GameLogic.Interfaces.Public;
 
-namespace TestConsole
+namespace TestConsole.Models
 {
 	internal class CellContentInfo : ICellContentInfo
 	{
 		public Coordinates Coordinates { get; private set; }
 		public byte HealthCount { get; private  set; }
 		public CellContentType Type { get; private  set; }
+		public string UserId { get; set; }
 
 		public static CellContentInfo Mountain(int x, int y)
 		{

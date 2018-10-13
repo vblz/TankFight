@@ -1,7 +1,7 @@
 ﻿using GameLogic.Enums;
 using GameLogic.Interfaces.Public;
 
-namespace TestConsole
+namespace TestConsole.Models
 {
 	internal class UserAction : IAction
 	{

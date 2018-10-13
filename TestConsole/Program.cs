@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using GameLogic.Enums;
 using GameLogic.Implementations.Game;
 using GameLogic.Implementations.Public;
 using GameLogic.Interfaces.Public;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Refit;
+using TestConsole.HttpClients;
+using TestConsole.Models;
+using TestConsole.Models.StorageService;
 
 namespace TestConsole
 {
@@ -17,12 +22,27 @@ namespace TestConsole
 		private const int Width = 34;
 		private const int Height = 20;
 
-		private static void Main()
+		private async static Task Main()
 		{
 			var game = new Game(new[] { "1", "2" }, GenerateMapInfo(), new Settings());
 
+			var storageClient = RestService.For<IStorageClient>("http://localhost:5005/");
+
+			string battleId = Guid.NewGuid().ToString();
+			await storageClient.StartNewBattle(new BattleInfo { BattleId = battleId, Map = "not supportd" });
+
+			uint i = 0;
+
 			while (true)
 			{
+				await storageClient.AddFrame(new Frame
+				{
+					BattleId = battleId,
+					FrameNumber = i,
+					DestroyedInfo = game.DestroyedObjects,
+					GameState = game.State
+				}, battleId);
+				
 				Console.Clear();
 				Console.WriteLine(RenderGame(game.State));
 				
@@ -33,6 +53,7 @@ namespace TestConsole
 				}
 				
 				game.Tick(moves);
+				++i;
 			}
 		}
 

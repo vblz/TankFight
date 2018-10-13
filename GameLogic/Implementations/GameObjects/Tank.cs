@@ -1,6 +1,5 @@
 ﻿using GameLogic.Enums;
 using GameLogic.Interfaces.Game;
-using GameLogic.Interfaces.Map;
 
 namespace GameLogic.Implementations.GameObjects
 {

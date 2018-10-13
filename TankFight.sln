@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapPrinter", "MapPrinter\MapPrinter.csproj", "{8A777D47-5767-4112-8AF0-5AFD859251A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageService", "StorageService\StorageService.csproj", "{18456EE5-C7EF-4E57-85BF-243B39890FBE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8A777D47-5767-4112-8AF0-5AFD859251A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A777D47-5767-4112-8AF0-5AFD859251A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A777D47-5767-4112-8AF0-5AFD859251A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

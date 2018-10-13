@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using GameLogic.Interfaces.Public;
 
-namespace TestConsole
+namespace TestConsole.Models
 {
 	internal class MapInfo : IMapInfo
 	{
