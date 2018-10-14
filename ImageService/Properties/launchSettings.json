@@ -1,0 +1,12 @@
+﻿{
+  "profiles": {
+    "ImageService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "http://*:5002",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5002"
+    }
+  }
+}
