@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLogic", "GameLogic\GameLogic.csproj", "{0F7451BD-A26E-48EF-A5AB-AA22DB847B12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameLogic", "GameLogic\GameLogic.csproj", "{0F7451BD-A26E-48EF-A5AB-AA22DB847B12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{7AEC5D02-171D-4389-AEE9-E4C4C6DC15A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{7AEC5D02-171D-4389-AEE9-E4C4C6DC15A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapPrinter", "MapPrinter\MapPrinter.csproj", "{8A777D47-5767-4112-8AF0-5AFD859251A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapPrinter", "MapPrinter\MapPrinter.csproj", "{8A777D47-5767-4112-8AF0-5AFD859251A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageService", "StorageService\StorageService.csproj", "{18456EE5-C7EF-4E57-85BF-243B39890FBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageService", "StorageService\StorageService.csproj", "{18456EE5-C7EF-4E57-85BF-243B39890FBE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageService", "ImageService\ImageService.csproj", "{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18456EE5-C7EF-4E57-85BF-243B39890FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
