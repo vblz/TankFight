@@ -1,10 +1,9 @@
 ﻿{
-  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "$schema": "http://json.schemastore.org/launchsettings.json"
   "profiles": {
-    "StorageService": {
+    "FightServer": {
       "commandName": "Project",
-      "applicationUrl": "http://localhost:5005",
-      
+      "applicationUrl": "http://localhost:5006",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

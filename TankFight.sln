@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageService", "StorageSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageService", "ImageService\ImageService.csproj", "{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FightServer", "FightServer\FightServer.csproj", "{80A93900-7B53-45C7-9281-2663458810CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{847BFB5E-50DA-4F05-9E4E-25AA097AA045}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +43,19 @@ Global
 		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FC4B5F2-EC7E-461F-AA1A-B78170E6482E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80A93900-7B53-45C7-9281-2663458810CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80A93900-7B53-45C7-9281-2663458810CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80A93900-7B53-45C7-9281-2663458810CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80A93900-7B53-45C7-9281-2663458810CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F374A7A-C412-4998-A13E-134B9039E62B}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{80A93900-7B53-45C7-9281-2663458810CE} = {847BFB5E-50DA-4F05-9E4E-25AA097AA045}
+		{18456EE5-C7EF-4E57-85BF-243B39890FBE} = {847BFB5E-50DA-4F05-9E4E-25AA097AA045}
 	EndGlobalSection
 EndGlobal
