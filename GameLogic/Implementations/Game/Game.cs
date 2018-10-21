@@ -69,6 +69,9 @@ namespace GameLogic.Implementations.Game
 			this.DestroyedObjects = new DestroyedInfo(destroyedBullets, destroyedObjects);
 		}
 
+		// пока все танки не будут уничтожены
+		public bool IsEnded() => this.mapAdapter.GetState().All(x => x.Type != CellContentType.Tank);
+
 		private void ProcessUserMove(string userId, IAction action)
 		{
 			if (action == null)
@@ -91,7 +94,7 @@ namespace GameLogic.Implementations.Game
 			}
 		}
 
-		public Game(string[] userIds, IMapInfo mapInfo, IGameSettings settings)
+		public Game(ICollection<string> userIds, IMapInfo mapInfo, IGameSettings settings)
 		{
 			if (userIds == null)
 			{
