@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using FightServer.HttpClients;
 using FightServer.Models;
 using FightServer.Services.Interfaces;
@@ -20,6 +19,7 @@ namespace FightServer.Services.Implementations
 			var battleInfo = new BattleInfo
 			{
 				BattleId = Guid.NewGuid().ToString(),
+        // TODO Карта
 				Map = @"D:/"
 			};
 			
@@ -33,6 +33,7 @@ namespace FightServer.Services.Implementations
 			return battleInfo;
 		}
 
+    // TODO убрать в стартап?
 		private IStorageClient CreateStorageClient() => RestService.For<IStorageClient>("http://localhost:5005");
 
 		public BattleService(IDockerService dockerService, ILogger<BattleService> logger, ILoggerFactory loggerFactory)

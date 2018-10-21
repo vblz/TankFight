@@ -9,7 +9,7 @@ namespace FightServer.Services.Interfaces
 		//Task GetImages(string[] dockerHubImages);
 		
 		// ограничить размер и сеть
-		Task<string> StartContainer(string imageName);
+		Task<string> CreateAndStartContainer(string imageName);
 		
 		Task StopContainer(string containerId);
 

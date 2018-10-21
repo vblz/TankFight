@@ -9,7 +9,7 @@ namespace FightServer.HttpClients
 		[Post("/api/battle")]
 		Task StartNewBattle(BattleInfo battleInfo);
 		
-		[Post("api/battle/{battleId}/frame")]
-		Task AddFrame(string battleId, Frame frame);
+		[Post("/api/battle/{battleId}/frame")]
+		Task AddFrame([AliasAs("battleId")] string battleId, [Body] Frame frame);
 	}
 }

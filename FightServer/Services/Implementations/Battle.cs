@@ -32,7 +32,8 @@ namespace FightServer.Services.Implementations
 			this.dockerContainerIds = new Dictionary<string, string>(this.dockerImages.Count);
 			foreach (var dockerImage in this.dockerImages)
 			{
-				var containerId = await this.dockerService.StartContainer(dockerImage);
+        //TODO если не удалось создать или запустить?
+				var containerId = await this.dockerService.CreateAndStartContainer(dockerImage);
 				this.dockerContainerIds.Add(containerId, dockerImage);
 			}
 		}
@@ -140,6 +141,7 @@ namespace FightServer.Services.Implementations
 				}
 			}
 
+      //TODO нет проверки, что количества спавнов - достаточное
 			objects.Add(CellContentInfo.Spawn(1, 1));
 			objects.Add(CellContentInfo.Spawn(1, 2));
 

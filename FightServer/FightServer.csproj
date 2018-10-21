@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Docker.DotNet" Version="3.125.2" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Refit">
           <Version>4.6.48</Version>
