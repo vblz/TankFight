@@ -32,9 +32,16 @@ namespace FightServer.Services.Implementations
 			this.dockerContainerIds = new Dictionary<string, string>(this.dockerImages.Count);
 			foreach (var dockerImage in this.dockerImages)
 			{
-        //TODO если не удалось создать или запустить?
-				var containerId = await this.dockerService.CreateAndStartContainer(dockerImage);
-				this.dockerContainerIds.Add(containerId, dockerImage);
+				try
+				{
+					var containerId = await this.dockerService.CreateAndStartContainer(dockerImage);
+					this.dockerContainerIds.Add(containerId, dockerImage);
+				}
+				catch (Exception ex)
+				{
+					this.logger.LogCritical(ex, "Невозможно создать контейнер");
+					throw;
+				}
 			}
 		}
 		
@@ -69,13 +76,20 @@ namespace FightServer.Services.Implementations
 
 			foreach (var containerId in this.dockerContainerIds.Keys)
 			{
-				await this.dockerService.StopContainer(containerId);
+				try
+				{
+					await this.dockerService.StopContainer(containerId);
+				}
+				catch (Exception ex)
+				{
+					this.logger.LogCritical(ex, $"Ошибка при остановке контейнера {containerId}");
+				}
 			}
 		}
 
 		private async Task Tick()
 		{
-			var state = JsonConvert.SerializeObject(this.game.State);
+			var state = JsonConvert.SerializeObject(this.game.State) + "\n";
 			var movesTasks = this.dockerContainerIds
 				.Select(x => this.ReadMove(state, x.Key));
 			
@@ -97,7 +111,16 @@ namespace FightServer.Services.Implementations
 			catch (Exception ex)
 			{
 				this.logger.LogInformation(ex, "Ошибка при попытке получить ввод");
-				await this.dockerService.StopContainer(containerId);
+				
+				try
+				{
+					await this.dockerService.StopContainer(containerId);
+				}
+				catch (Exception stopEx)
+				{
+					this.logger.LogError(stopEx, "При остановке контейнера по ошибке произошла другая ошибка");
+				}
+				
 				this.dockerContainerIds.Remove(containerId);
 			}
 			
@@ -140,10 +163,6 @@ namespace FightServer.Services.Implementations
 						break;
 				}
 			}
-
-      //TODO нет проверки, что количества спавнов - достаточное
-			objects.Add(CellContentInfo.Spawn(1, 1));
-			objects.Add(CellContentInfo.Spawn(1, 2));
 
 			map.MapObjects = objects.AsReadOnly();
 			return map;

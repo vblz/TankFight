@@ -17,7 +17,7 @@ namespace FightServer.Controllers
 	  [ProducesResponseType(200)]
 	  [ProducesResponseType(400)]
 	  [ProducesResponseType(500)]
-	  public async Task<IActionResult> StartNew([FromBody] string[] dockerImages)
+	  public IActionResult StartNew([FromBody] string[] dockerImages)
 	  {
 	    if (dockerImages == null || dockerImages.Length == 0)
 	    {
@@ -26,7 +26,7 @@ namespace FightServer.Controllers
 
 	    var battleInfo = this.battleService.StartNew(dockerImages);
 
-	    return Ok(battleInfo);
+	    return this.Ok(battleInfo);
 	  }
 
     public FightController(IBattleService battleService)

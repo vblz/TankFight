@@ -19,8 +19,7 @@ namespace FightServer.Services.Implementations
 			var battleInfo = new BattleInfo
 			{
 				BattleId = Guid.NewGuid().ToString(),
-        // TODO Карта
-				Map = @"D:/"
+				Map = @"D:/maps/1/"
 			};
 			
 			var battle = new Battle(battleInfo, dockerImages, this.dockerService, this.CreateStorageClient(),
@@ -33,7 +32,6 @@ namespace FightServer.Services.Implementations
 			return battleInfo;
 		}
 
-    // TODO убрать в стартап?
 		private IStorageClient CreateStorageClient() => RestService.For<IStorageClient>("http://localhost:5005");
 
 		public BattleService(IDockerService dockerService, ILogger<BattleService> logger, ILoggerFactory loggerFactory)

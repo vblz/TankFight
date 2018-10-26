@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,20 +9,22 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using FightServer.Exceptions;
 using FightServer.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace FightServer.Services.Implementations
 {
   public class DockerService : IDockerService
   {
-
+    private const int MaxAnswerSizeBytes = 5 * 1024;
+    private static readonly TimeSpan timeForContainerResponse = TimeSpan.FromSeconds(5);
+    private static readonly byte NewLineChar = Encoding.ASCII.GetBytes("\n")[0];
+    
     private readonly IDockerClient dockerClient;
     private readonly ILogger<DockerService> logger;
-    private readonly TimeSpan TimeForContainerResponse = TimeSpan.FromSeconds(10);
 
     public async Task<string> CreateAndStartContainer(string imageName)
     {
-      //Chirkov_IA Не нашел, как ограничить размер, думаю надо ограничивать до того, как образ попал сюда.
       var containerId = await this.CreateContainer(imageName);
       await this.StartContainer(containerId);
 
@@ -46,31 +51,65 @@ namespace FightServer.Services.Implementations
 
     public async Task<string> AskContainer(string containerId, string stdIn)
     {
-      var attachStream = await this.dockerClient.Containers.AttachContainerAsync(containerId, false,
+      using (var attachStream = await this.dockerClient.Containers.AttachContainerAsync(containerId, false,
         new ContainerAttachParameters
         {
           Stream = true,
           Stdin = true,
-          Stdout = true,
-          Stderr = true
-        });
-
-      // FIXME Не успел проверить. На моем образе не работало
-      await attachStream.WriteAsync(Encoding.ASCII.GetBytes(stdIn), 0, stdIn.Length, CancellationToken.None);
-
-      var cts = new CancellationTokenSource(TimeForContainerResponse);
-
-      //FIXME Не успел проверить. На моем образе не работало
-      var (stdout, stderr) = await attachStream.ReadOutputToEndAsync(cts.Token);
-
-      if (string.IsNullOrWhiteSpace(stdout))
+          Stdout = true
+        }))
       {
-        throw new ContainerAnswerException("Контейнер не ответил за установленное время или ответил пустой строкой.");
+        var writeBuffer = Encoding.UTF8.GetBytes(stdIn);
+        await attachStream.WriteAsync(writeBuffer, 0, writeBuffer.Length, CancellationToken.None);
+
+        var stdOutTask = this.ReadLineAsync(attachStream, new CancellationTokenSource(timeForContainerResponse).Token);
+        await Task.WhenAny(stdOutTask, Task.Delay(timeForContainerResponse));
+
+        if (!stdOutTask.IsCompleted)
+        {
+          throw new ContainerAnswerException("Контейнер не ответил");
+        }
+        
+        return await stdOutTask;
+      }
+    }
+
+    public async Task<string> ReadLineAsync(MultiplexedStream multiplexedStream, CancellationToken cancellationToken)
+    {
+      List<byte> received = new List<byte>();
+      byte[] buffer = new byte[15];
+
+      while (!cancellationToken.IsCancellationRequested)
+      {
+        var readResult =
+          await multiplexedStream.ReadOutputAsync(buffer, 0, buffer.Length, cancellationToken);
+
+        if (readResult.Target != MultiplexedStream.TargetStream.StandardOut)
+        {
+          continue;
+        }
+
+        int newLineIndex = -1;
+        
+        for (int i = 0; i < readResult.Count; ++i)
+        {
+          if (buffer[i] == NewLineChar)
+          {
+            newLineIndex = i;
+            break;
+          }
+        }
+
+        if (newLineIndex != -1)
+        {
+          received.AddRange(buffer.Take(newLineIndex));
+          break;
+        }
+        
+        received.AddRange(buffer.Take(readResult.Count));
       }
 
-      this.logger.LogWarning($"Контейнер вернул stderr: {stderr}");
-
-      return stdout;
+      return Encoding.UTF8.GetString(received.ToArray());
     }
 
     private async Task<string> CreateContainer(string imageName)
@@ -81,10 +120,26 @@ namespace FightServer.Services.Implementations
         {
           AttachStdin = true,
           AttachStdout = true,
-          AttachStderr = true,
           NetworkDisabled = true,
-          Image = imageName
-          //TODO Возможно, сюда добавить User, от кого будут выполняться команды внутри контейнера.
+          Tty = false,
+          OpenStdin = true,
+          Image = imageName,
+          StopTimeout = TimeSpan.Zero,
+          HostConfig = new HostConfig
+          {
+            Memory = 512 * 1024 * 1024,
+            MemorySwap = 0,
+            CPUCount = 1,
+            AutoRemove = true,
+            BlkioDeviceWriteBps = new List<ThrottleDevice>()
+            {
+              new ThrottleDevice
+              {
+                Path = "/dev/sda",
+                Rate = 1024 * 1024
+              }
+            }
+          }
         });
 
         return createResult.ID;
