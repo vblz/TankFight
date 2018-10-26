@@ -1,10 +1,10 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using FightServer.Models;
 
 namespace FightServer.Services.Interfaces
 {
-	public interface IBattleService
-	{
-		BattleInfo StartNew(string[] dockerImages);
-	}
+  public interface IBattleService
+  {
+    BattleInfo StartNew(ISet<string> dockerImages);
+  }
 }

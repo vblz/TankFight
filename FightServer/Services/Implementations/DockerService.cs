@@ -62,11 +62,14 @@ namespace FightServer.Services.Implementations
         var writeBuffer = Encoding.UTF8.GetBytes(stdIn);
         await attachStream.WriteAsync(writeBuffer, 0, writeBuffer.Length, CancellationToken.None);
 
-        var stdOutTask = this.ReadLineAsync(attachStream, new CancellationTokenSource(timeForContainerResponse).Token);
+        var cts = new CancellationTokenSource(timeForContainerResponse);
+
+        var stdOutTask = this.ReadLineAsync(attachStream, cts.Token);
         await Task.WhenAny(stdOutTask, Task.Delay(timeForContainerResponse));
 
         if (!stdOutTask.IsCompleted)
         {
+          cts.Cancel();
           throw new ContainerAnswerException("Контейнер не ответил");
         }
         

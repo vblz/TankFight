@@ -5,10 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="wwwroot\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Docker.DotNet" Version="3.125.2" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Refit">
