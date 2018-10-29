@@ -23,7 +23,7 @@ namespace GameLogic.Implementations.Services
 		public IDestroyedInfo Process()
 		{
 			var destroyedBullets = new Dictionary<string, Coordinates>();
-			var destroyedObjects = new List<Coordinates>();
+			var destroyedObjects = new List<ICellContentInfo>();
 			
 			for (byte i = 0; i < this.bulletActionPointCount; ++i)
 			{

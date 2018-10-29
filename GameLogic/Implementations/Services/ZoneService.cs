@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameLogic.Enums;
 using GameLogic.Implementations.Public;
+using GameLogic.Interfaces.Public;
 using GameLogic.Interfaces.Services;
 
 namespace GameLogic.Implementations.Services
@@ -12,7 +13,7 @@ namespace GameLogic.Implementations.Services
 
 		public byte Radius { get; private set; }
 		
-		public IReadOnlyCollection<Coordinates> Process()
+		public IReadOnlyCollection<ICellContentInfo> Process()
 		{
 			if (this.Radius > 0)
 			{
@@ -22,7 +23,7 @@ namespace GameLogic.Implementations.Services
 			return this.Damage();
 		}
 
-		private IReadOnlyCollection<Coordinates> Damage()
+		private IReadOnlyCollection<ICellContentInfo> Damage()
 		{
 			var (xLess, xMore) = this.CalcAxisRect(this.mapAdapter.Width);
 			var (yLess, yMore) = this.CalcAxisRect(this.mapAdapter.Height);

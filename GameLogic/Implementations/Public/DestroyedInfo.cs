@@ -7,13 +7,13 @@ namespace GameLogic.Implementations.Public
 	internal sealed class DestroyedInfo : IDestroyedInfo
 	{
 		public IReadOnlyDictionary<string, Coordinates> DestroyedBullets { get; }
-		public IReadOnlyCollection<Coordinates> DestroyedObjects { get; }
+		public IReadOnlyCollection<ICellContentInfo> DestroyedObjects { get; }
 
 		public DestroyedInfo(IDictionary<string, Coordinates> destroyedBullets,
-			IList<Coordinates> destroyedObjects)
+			IList<ICellContentInfo> destroyedObjects)
 		{
 			this.DestroyedBullets = new ReadOnlyDictionary<string, Coordinates>(destroyedBullets);
-			this.DestroyedObjects = new ReadOnlyCollection<Coordinates>(destroyedObjects);
+			this.DestroyedObjects = new ReadOnlyCollection<ICellContentInfo>(destroyedObjects);
 		}
 	}
 }

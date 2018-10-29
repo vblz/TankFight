@@ -5,6 +5,6 @@ namespace StorageService.Models
 	public sealed class DestroyedInfo
 	{
 		public IReadOnlyDictionary<string, Coordinates> DestroyedBullets { get; set; }
-		public IReadOnlyCollection<Coordinates> DestroyedObjects { get; set; }
+		public IReadOnlyCollection<CellContentInfo> DestroyedObjects { get; set; }
 	}
 }

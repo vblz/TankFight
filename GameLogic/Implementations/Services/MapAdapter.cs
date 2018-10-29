@@ -52,7 +52,7 @@ namespace GameLogic.Implementations.Services
 
 		public IReadOnlyCollection<ICellContentInfo> GetState() => this.map.GetState();
 
-		public IReadOnlyCollection<Coordinates> ClearDeadCells() => this.map.ClearDeadCells();
+		public IReadOnlyCollection<ICellContentInfo> ClearDeadCells() => this.map.ClearDeadCells();
 
 		public MapAdapter(IMap map)
 		{

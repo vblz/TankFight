@@ -45,14 +45,15 @@ namespace GameLogic.Implementations.Game
 				.AsReadOnly();
 		}
 
-		public IReadOnlyCollection<Coordinates> ClearDeadCells()
+		public IReadOnlyCollection<ICellContentInfo> ClearDeadCells()
 		{
 			return this.battlefield.Cells
 				.Where(cell => !cell.IsEmpty && !cell.Content.IsAlive)
 				.Select(cell =>
 				{
+					var result = new CellContentInfo(cell); 
 					cell.Pop();
-					return cell.Coordinates;
+					return result;
 				})
 				.ToList();
 		}

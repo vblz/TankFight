@@ -6,6 +6,6 @@ namespace GameLogic.Interfaces.Public
 	public interface IDestroyedInfo
 	{
 		IReadOnlyDictionary<string, Coordinates> DestroyedBullets { get; }
-		IReadOnlyCollection<Coordinates> DestroyedObjects { get; }
+		IReadOnlyCollection<ICellContentInfo> DestroyedObjects { get; }
 	}
 }

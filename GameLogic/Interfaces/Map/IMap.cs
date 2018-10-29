@@ -13,6 +13,6 @@ namespace GameLogic.Interfaces.Map
 		ICell GetCell(int x, int y);
 		ICell GetUserCell(string userId);
 		IReadOnlyCollection<ICellContentInfo> GetState();
-		IReadOnlyCollection<Coordinates> ClearDeadCells();
+		IReadOnlyCollection<ICellContentInfo> ClearDeadCells();
 	}
 }

@@ -34,7 +34,7 @@ namespace GameLogic.Implementations.Game
 				.ToArray(); // ToArray - что бы не каждую итерацию перемешивались, а только перед началом.
 			
 			var destroyedBullets = new Dictionary<string, Coordinates>();
-			var destroyedObjects = new List<Coordinates>();
+			var destroyedObjects = new List<ICellContentInfo>();
 			
 			for (int i = 0; i < this.actionPoints; ++i)
 			{
@@ -121,7 +121,7 @@ namespace GameLogic.Implementations.Game
 			this.moveService = new MoveService(this.mapAdapter);
 			this.zoneService = new ZoneService(this.mapAdapter, settings.ZoneRadius);
 			
-			this.DestroyedObjects = new DestroyedInfo(new Dictionary<string, Coordinates>(), new Coordinates[0]);
+			this.DestroyedObjects = new DestroyedInfo(new Dictionary<string, Coordinates>(), new ICellContentInfo[0]);
 		}
 	}
 }

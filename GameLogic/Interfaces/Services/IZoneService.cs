@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using GameLogic.Implementations.Public;
+using GameLogic.Interfaces.Public;
 
 namespace GameLogic.Interfaces.Services
 {
@@ -7,6 +7,6 @@ namespace GameLogic.Interfaces.Services
 	{
 		byte Radius { get; }
 		
-		IReadOnlyCollection<Coordinates> Process();
+		IReadOnlyCollection<ICellContentInfo> Process();
 	}
 }
