@@ -70,7 +70,7 @@ namespace GameLogic.Implementations.Game
 		}
 
 		// пока все танки не будут уничтожены
-		public bool IsEnded() => this.mapAdapter.GetState().All(x => x.Type != CellContentType.Tank);
+		public bool IsEnded() => this.mapAdapter.GetState().Count(x => x.Type == CellContentType.Tank) <= 1;
 
 		private void ProcessUserMove(string userId, IAction action)
 		{

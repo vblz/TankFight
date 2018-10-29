@@ -55,7 +55,7 @@ namespace StorageService.Controllers
 		[ProducesResponseType(400)]
 		[ProducesResponseType(409)]
 		[ProducesResponseType(500)]
-		public async Task<ActionResult<IEnumerable<string>>> GetWinners([FromRoute] string battleId)
+		public async Task<ActionResult<BattleResult>> GetWinners([FromRoute] string battleId)
 		{
 			if (string.IsNullOrEmpty(battleId))
 			{
@@ -64,7 +64,7 @@ namespace StorageService.Controllers
 
 			try
 			{
-				return new ActionResult<IEnumerable<string>>(await this.battleStorage.GetWinners(battleId));
+				return new ActionResult<BattleResult>(await this.battleStorage.GetWinners(battleId));
 			}
 			catch (BattleNotFoundException ex)
 			{

@@ -96,6 +96,12 @@ namespace StorageService.Controllers
 					$"Фрейм с номером {frame.FrameNumber} не может быть добавлен в битву {frame.BattleId}");
 				return this.Conflict($"{nameof(frame.FrameNumber)} указан не верно");
 			}
+			catch (BattleAlreadyFinishedException ex)
+			{
+				this.logger.LogWarning(ex,
+					$"Фрейм с номером {frame.FrameNumber} не может быть добавлен в битву {frame.BattleId}");
+				return this.Conflict($"Битва уже завершена");
+			}
 			catch (Exception ex)
 			{
 				this.logger.LogWarning(ex, $"Ошибка добавления фрейма {frame.FrameNumber} в битву {frame.BattleId}");

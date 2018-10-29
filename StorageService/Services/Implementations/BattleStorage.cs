@@ -41,7 +41,7 @@ namespace StorageService.Services.Implementations
 			throw new FrameNotFoundException();
 		}
 
-		public async Task<IEnumerable<string>> GetWinners(string battleId)
+		public async Task<BattleResult> GetWinners(string battleId)
 		{
 			if (string.IsNullOrEmpty(battleId))
 			{
@@ -62,19 +62,25 @@ namespace StorageService.Services.Implementations
 			// определяем, что битва закончилось, если остался 1 или 0 танков
 			// победители - либо последний выживший, либо последние умершие в один кадр
 
-			if (CountTanks(allFrames[0].GameState) > 1)
+			if (CountAlivedTanks(allFrames[0].GameState) > 1)
 			{
 				throw new BattleNotFinishedException();
 			}
 
-			foreach (var frame in allFrames)
+			for (int i = 0; i < allFrames.Count; ++i)
 			{
-				if (CountTanks(frame.GameState) > 0)
+				if (CountAlivedTanks(allFrames[i].GameState) > 0)
 				{
-					return frame.GameState.ContentsInfo
+					var winners = allFrames[i].GameState.ContentsInfo
 						.Where(x => x.Type == CellContentType.Tank)
 						.Select(x => x.UserId)
 						.ToImmutableList();
+
+					return new BattleResult
+					{
+						FramesCount = allFrames.Count,
+						WinnersIds = winners
+					};
 				}
 			}
 			
@@ -111,6 +117,16 @@ namespace StorageService.Services.Implementations
 			else if (frame.FrameNumber != lastFrame.FrameNumber + 1)
 			{
 				throw new InvalidOperationException(nameof(frame.FrameNumber));
+			}
+
+			// нельзя добавлять фреймы после выигрышного
+			if (CountAlivedTanks(frame.GameState) <= 1)
+			{
+				if (lastFrame != null &&
+				    CountAlivedTanks(lastFrame.GameState) <= 1)
+				{
+					throw new BattleAlreadyFinishedException();
+				}
 			}
 
 			try
@@ -152,8 +168,8 @@ namespace StorageService.Services.Implementations
 		private bool IsBatleExists(string battleId) =>
 			this.battleCollection.CountDocuments(x => x.BattleId == battleId) != 0;
 
-		private static int CountTanks(GameState gameState) =>
-			gameState.ContentsInfo.Count(x => x.Type == CellContentType.Tank);
+		private static int CountAlivedTanks(GameState gameState) =>
+			gameState.ContentsInfo.Count(x => x.Type == CellContentType.Tank && x.HealthCount > 0);
 
 		public BattleStorage(IMongoCollection<Frame> frameCollection, IMongoCollection<BattleInfo> battleCollection)
 		{
