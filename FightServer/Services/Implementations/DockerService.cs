@@ -19,7 +19,7 @@ namespace FightServer.Services.Implementations
     private const int MaxAnswerSizeBytes = 5 * 1024;
     private static readonly TimeSpan timeForContainerResponse = TimeSpan.FromSeconds(5);
     private static readonly byte NewLineChar = Encoding.ASCII.GetBytes("\n")[0];
-    
+
     private readonly IDockerClient dockerClient;
     private readonly ILogger<DockerService> logger;
 
@@ -67,13 +67,19 @@ namespace FightServer.Services.Implementations
         var stdOutTask = this.ReadLineAsync(attachStream, cts.Token);
         await Task.WhenAny(stdOutTask, Task.Delay(timeForContainerResponse));
 
-        if (!stdOutTask.IsCompleted)
+        if (!stdOutTask.IsCompletedSuccessfully)
         {
           cts.Cancel();
           throw new ContainerAnswerException("Контейнер не ответил");
         }
-        
-        return await stdOutTask;
+
+        var result = await stdOutTask;
+        if (string.IsNullOrEmpty(result))
+        {
+          throw new ContainerAnswerException("Контейнер ответил пустой строкой");
+        }
+
+        return result;
       }
     }
 
@@ -93,7 +99,7 @@ namespace FightServer.Services.Implementations
         }
 
         int newLineIndex = -1;
-        
+
         for (int i = 0; i < readResult.Count; ++i)
         {
           if (buffer[i] == NewLineChar)
@@ -108,7 +114,7 @@ namespace FightServer.Services.Implementations
           received.AddRange(buffer.Take(newLineIndex));
           break;
         }
-        
+
         received.AddRange(buffer.Take(readResult.Count));
       }
 
