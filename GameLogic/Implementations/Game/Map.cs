@@ -76,10 +76,9 @@ namespace GameLogic.Implementations.Game
 			IBattlefieldBuilder battlefieldBuilder,
 			ISpawnService spawnService)
 		{
-			this.Height = creationData.MapInfo.Height;
-			this.Width = creationData.MapInfo.Width;
-			
 			this.battlefield = battlefieldBuilder.Build(creationData.MapInfo);
+			this.Width = battlefield.Width;
+			this.Height = (byte)(battlefield.Cells.Count / this.Width);
 			
 			spawnService.Spawn(this.battlefield.Cells, creationData.UserContents);
 		}
