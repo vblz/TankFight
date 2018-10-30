@@ -29,7 +29,7 @@ namespace TestConsole
 			var storageClient = RestService.For<IStorageClient>("http://localhost:5005/");
 
 			string battleId = Guid.NewGuid().ToString();
-			await storageClient.StartNewBattle(new BattleInfo { BattleId = battleId, Map = "not supportd" });
+			await storageClient.StartNewBattle(new BattleInfo { BattleId = battleId, Map = @"D:/maps/1/" });
 
 			uint i = 0;
 
@@ -118,7 +118,7 @@ namespace TestConsole
 
 		private static IMapInfo GenerateMapInfo()
 		{
-			var data =  JsonConvert.DeserializeObject<JObject>(File.ReadAllText(@"d:/objects.json"));
+			var data =  JsonConvert.DeserializeObject<JObject>(File.ReadAllText(@"d:/maps/1/objects.json"));
 			var map = new MapInfo
 			{
 				Height = data["Height"].Value<byte>(),

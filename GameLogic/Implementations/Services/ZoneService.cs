@@ -15,12 +15,13 @@ namespace GameLogic.Implementations.Services
 		
 		public IReadOnlyCollection<ICellContentInfo> Process()
 		{
+			var result = this.Damage();
 			if (this.Radius > 0)
 			{
 				--this.Radius;
 			}
 
-			return this.Damage();
+			return result;
 		}
 
 		private IReadOnlyCollection<ICellContentInfo> Damage()

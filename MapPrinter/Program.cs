@@ -87,7 +87,7 @@ namespace MapPrinter
 
 		static void Main(string[] args)
 		{
-			var baseMap = BuildMap(@"d:/objects.json", false);
+			var baseMap = BuildMap(@"d:/maps/1/objects.json", false);
 			Print(baseMap);
 
 			Console.WriteLine();
@@ -95,7 +95,7 @@ namespace MapPrinter
 			Console.WriteLine();
 			
 			
-			var extendedMap = BuildMap(@"d:/objects.json", true);
+			var extendedMap = BuildMap(@"d:/maps/1/objects.json", true);
 			Print(extendedMap);
 		}
 	}
