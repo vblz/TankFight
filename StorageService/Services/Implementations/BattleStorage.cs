@@ -165,6 +165,23 @@ namespace StorageService.Services.Implementations
 			}
 		}
 
+		public async Task<BattleInfo> GetBattle(string id)
+		{
+			if (string.IsNullOrEmpty(id))
+			{
+				throw new ArgumentNullException(nameof(id));
+			}
+
+			var result = await this.battleCollection.Find(x => x.BattleId == id).FirstOrDefaultAsync();
+			
+			if (result == null)
+			{
+				throw new BattleNotFoundException();
+			}
+
+			return result;
+		}
+
 		private bool IsBatleExists(string battleId) =>
 			this.battleCollection.CountDocuments(x => x.BattleId == battleId) != 0;
 

@@ -50,6 +50,34 @@ namespace StorageService.Controllers
 			}
 		}
 
+		[HttpGet("{battleId}/")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(404)]
+		[ProducesResponseType(500)]
+		public async Task<ActionResult<BattleInfo>> GetBattleInfo([FromRoute] string battleId)
+		{
+			if (string.IsNullOrEmpty(battleId))
+			{
+				return this.BadRequest(nameof(battleId));
+			}
+
+			try
+			{
+				return new ActionResult<BattleInfo>(await this.battleStorage.GetBattle(battleId));
+			}
+			catch (BattleNotFoundException ex)
+			{
+				this.logger.LogWarning(ex, $"Ошибка получения информации: бой {battleId} не найден");
+				return this.NotFound();
+			}
+			catch (Exception ex)
+			{
+				this.logger.LogWarning(ex, $"Ошибка получения информации {battleId}");
+				return this.StatusCode(500);
+			}
+		}
+
 		[HttpGet("{battleId}/winners")]
 		[ProducesResponseType(200)]
 		[ProducesResponseType(400)]

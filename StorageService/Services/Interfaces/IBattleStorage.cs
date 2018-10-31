@@ -10,5 +10,6 @@ namespace StorageService.Services.Interfaces
 		Task<BattleResult> GetWinners(string battleId);
 		Task PostFrame(Frame frame);
 		Task StartNewBattle(BattleInfo battleInfo);
+		Task<BattleInfo> GetBattle(string id);
 	}
 }
