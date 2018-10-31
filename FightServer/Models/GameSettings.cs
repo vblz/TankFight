@@ -7,7 +7,7 @@ namespace FightServer.Models
 		public static GameSettings Default = new GameSettings
 		{
 			TankHealthPoint = 3,
-			ZoneRadius = 255,
+			ZoneRadius = byte.MaxValue,
 			ActionPoints = 1,
 			BulletActionPoints = 2
 		};

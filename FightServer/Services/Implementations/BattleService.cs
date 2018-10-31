@@ -4,7 +4,9 @@ using System.Threading;
 using FightServer.HttpClients;
 using FightServer.Models;
 using FightServer.Services.Interfaces;
+using FightServer.Settings;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Refit;
 
 namespace FightServer.Services.Implementations
@@ -14,32 +16,28 @@ namespace FightServer.Services.Implementations
     private readonly IDockerService dockerService;
     private readonly ILogger<BattleService> logger;
     private readonly ILoggerFactory loggerFactory;
+    private readonly BattleSettings battleSettings;
 
     public BattleInfo StartNew(ISet<string> dockerImages)
     {
-      var battleInfo = new BattleInfo
-      {
-        BattleId = Guid.NewGuid().ToString(),
-        Map = @"D:/maps/1/"
-      };
-
-      var battle = new Battle(battleInfo, dockerImages, this.dockerService, this.CreateStorageClient(),
+      var battle = new Battle(battleSettings, dockerImages, this.dockerService, this.CreateStorageClient(),
         this.loggerFactory.CreateLogger<Battle>());
 
 #pragma warning disable 4014
       battle.Start(new CancellationToken());
 #pragma warning restore 4014
 
-      return battleInfo;
+      return battle.BattleInfo;
     }
 
-    private IStorageClient CreateStorageClient() => RestService.For<IStorageClient>("http://localhost:5005");
+    private IStorageClient CreateStorageClient() => RestService.For<IStorageClient>(this.battleSettings.StorageServiceLocation);
 
-    public BattleService(IDockerService dockerService, ILogger<BattleService> logger, ILoggerFactory loggerFactory)
+    public BattleService(IDockerService dockerService, ILogger<BattleService> logger, ILoggerFactory loggerFactory, IOptions<BattleSettings> battleSettings)
     {
       this.dockerService = dockerService;
       this.logger = logger;
       this.loggerFactory = loggerFactory;
+      this.battleSettings = battleSettings.Value ?? throw new ArgumentNullException();
     }
   }
 }

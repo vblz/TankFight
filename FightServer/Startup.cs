@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Docker.DotNet;
 using FightServer.Services.Implementations;
 using FightServer.Services.Interfaces;
+using FightServer.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +26,16 @@ namespace FightServer
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .Configure<BattleSettings>(this.Configuration.GetSection("BattleSettings"))
+                .Configure<ContainerSettings>(this.Configuration.GetSection("ContainerSettings"));
+
+            var dockerUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? new Uri("npipe://./pipe/docker_engine")
+                : new Uri("unix:/var/run/docker.sock");
+            
+            services
                 .AddSingleton<IDockerClient>(
-                    new DockerClientConfiguration(new Uri(this.Configuration["Locations:Docker"]))
+                    new DockerClientConfiguration(dockerUrl)
                         .CreateClient());
 
             services

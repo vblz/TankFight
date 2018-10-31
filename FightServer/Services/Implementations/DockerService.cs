@@ -9,19 +9,21 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using FightServer.Exceptions;
 using FightServer.Services.Interfaces;
+using FightServer.Settings;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FightServer.Services.Implementations
 {
   public class DockerService : IDockerService
   {
-    private const int MaxAnswerSizeBytes = 5 * 1024;
     private static readonly TimeSpan timeForContainerResponse = TimeSpan.FromSeconds(5);
-    private static readonly byte NewLineChar = Encoding.ASCII.GetBytes("\n")[0];
+    private static readonly byte NewLineChar = (byte)'\n'; // ASCII
 
     private readonly IDockerClient dockerClient;
     private readonly ILogger<DockerService> logger;
+    private readonly ContainerSettings settings;
 
     public async Task<string> CreateAndStartContainer(string imageName)
     {
@@ -139,7 +141,7 @@ namespace FightServer.Services.Implementations
             Memory = 512 * 1024 * 1024,
             MemorySwap = 0,
             CPUCount = 1,
-            AutoRemove = true,
+            AutoRemove = !this.settings.DontRemoveContainers,
             BlkioDeviceWriteBps = new List<ThrottleDevice>()
             {
               new ThrottleDevice
@@ -174,10 +176,11 @@ namespace FightServer.Services.Implementations
       }
     }
 
-    public DockerService(IDockerClient dockerClient, ILogger<DockerService> logger)
+    public DockerService(IDockerClient dockerClient, ILogger<DockerService> logger, IOptions<ContainerSettings> settings)
     {
       this.dockerClient = dockerClient;
       this.logger = logger;
+      this.settings = settings.Value ?? throw new ArgumentNullException();
     }
   }
 }

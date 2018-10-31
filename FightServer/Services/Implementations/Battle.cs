@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FightServer.HttpClients;
 using FightServer.Models;
 using FightServer.Services.Interfaces;
+using FightServer.Settings;
 using GameLogic.Implementations.Game;
 using GameLogic.Interfaces.Public;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,6 @@ namespace FightServer.Services.Implementations
 {
 	internal sealed class Battle
 	{
-		private readonly BattleInfo battleInfo;
 		private readonly IDockerService dockerService;
 		private readonly ICollection<string> dockerImages;
 		private readonly Game game;
@@ -26,6 +26,7 @@ namespace FightServer.Services.Implementations
 		private readonly IStorageClient storageClient;
 		
 		private IDictionary<string, string> dockerContainerIds;
+		public BattleInfo BattleInfo { get; private set; }
 
 		private async Task StartContainers()
 		{
@@ -48,16 +49,16 @@ namespace FightServer.Services.Implementations
 
 		public async Task Start(CancellationToken cancellationToken)
 		{
-			await this.storageClient.StartNewBattle(this.battleInfo);
+			await this.storageClient.StartNewBattle(this.BattleInfo);
 			
 			await this.StartContainers();
 
 			uint i = 0;
 			while (!cancellationToken.IsCancellationRequested && !this.game.IsEnded())
 			{
-				await this.storageClient.AddFrame(this.battleInfo.BattleId, new Frame
+				await this.storageClient.AddFrame(this.BattleInfo.BattleId, new Frame
 				{
-					BattleId = this.battleInfo.BattleId,
+					BattleId = this.BattleInfo.BattleId,
 					GameState = this.game.State,
 					FrameNumber = i++,
 					DestroyedInfo = this.game.DestroyedObjects
@@ -66,9 +67,9 @@ namespace FightServer.Services.Implementations
 				await this.Tick();
 			}
 			
-			await this.storageClient.AddFrame(this.battleInfo.BattleId, new Frame
+			await this.storageClient.AddFrame(this.BattleInfo.BattleId, new Frame
 			{
-				BattleId = this.battleInfo.BattleId,
+				BattleId = this.BattleInfo.BattleId,
 				GameState = this.game.State,
 				FrameNumber = i++,
 				DestroyedInfo = this.game.DestroyedObjects
@@ -168,15 +169,21 @@ namespace FightServer.Services.Implementations
 			return map;
 		}
 
-		public Battle(BattleInfo battleInfo, ICollection<string> dockerImages,
+		public Battle(BattleSettings battleSettings, ICollection<string> dockerImages,
 			IDockerService dockerService, IStorageClient storageClient, ILogger<Battle> logger)
-		{
-			this.battleInfo = battleInfo;
+		{ 
+			this.BattleInfo = new BattleInfo
+				{
+					BattleId = Guid.NewGuid().ToString(),
+					Map = battleSettings.Map
+				};
 			this.dockerService = dockerService;
 			this.logger = logger;
 			this.storageClient = storageClient;
 			this.dockerImages = dockerImages;
-			this.game = new Game(dockerImages, this.LoadMap(battleInfo), GameSettings.Default);
+			var gameSettings = GameSettings.Default;
+			gameSettings.ZoneRadius = battleSettings.ZoneRadius;
+			this.game = new Game(dockerImages, this.LoadMap(this.BattleInfo), GameSettings.Default);
 		}
 	}
 }
