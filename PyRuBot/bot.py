@@ -2,11 +2,13 @@
 import random
 import json
 
+botName = 'vblz/tanks:pyrubot'
+
 while True:
     state = input()
     gameState = json.loads(state)
-    myTank = next(c for c in gameState["ContentsInfo"] if c["Type"] == 0 and c["UserId"] == "pyrubot")["Coordinates"]
-    enemyTank = next(c for c in gameState["ContentsInfo"] if c["Type"] == 0 and c["UserId"] != "pyrubot")["Coordinates"]
+    myTank = next(c for c in gameState["ContentsInfo"] if c["Type"] == 0 and c["UserId"] == botName)["Coordinates"]
+    enemyTank = next(c for c in gameState["ContentsInfo"] if c["Type"] == 0 and c["UserId"] != botName)["Coordinates"]
     dX = myTank["X"] - enemyTank["X"]
     dY = myTank["Y"] - enemyTank["Y"]
     if random.randint(0, 100) < 70:
