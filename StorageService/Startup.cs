@@ -23,6 +23,9 @@ namespace StorageService
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services
+				.AddCors();
+			
 			var mongoClient = new MongoClient(this.Configuration["Mongo:Connection"]);
 			var db = mongoClient.GetDatabase(this.Configuration["Mongo:Database"]);
 
@@ -47,6 +50,11 @@ namespace StorageService
 			{
 				app.UseDeveloperExceptionPage();
 			}
+
+			app.UseCors(builder => builder
+				.AllowAnyOrigin()
+				.AllowAnyHeader()
+				.AllowAnyMethod());
 			
 			// Enable middleware to serve generated Swagger as a JSON endpoint.
 			app.UseSwagger();

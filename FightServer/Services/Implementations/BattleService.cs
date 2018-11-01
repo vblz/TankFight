@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using FightServer.HttpClients;
 using FightServer.Models;
 using FightServer.Services.Interfaces;
@@ -18,16 +19,12 @@ namespace FightServer.Services.Implementations
     private readonly ILoggerFactory loggerFactory;
     private readonly BattleSettings battleSettings;
 
-    public BattleInfo StartNew(ISet<string> dockerImages)
+    public Task<BattleInfo> StartNew(ISet<string> dockerImages)
     {
       var battle = new Battle(battleSettings, dockerImages, this.dockerService, this.CreateStorageClient(),
         this.loggerFactory.CreateLogger<Battle>());
 
-#pragma warning disable 4014
-      battle.Start(new CancellationToken());
-#pragma warning restore 4014
-
-      return battle.BattleInfo;
+      return battle.Start(new CancellationToken());
     }
 
     private IStorageClient CreateStorageClient() => RestService.For<IStorageClient>(this.battleSettings.StorageServiceLocation);

@@ -26,7 +26,7 @@ namespace FightServer.Services.Implementations
 		private readonly IStorageClient storageClient;
 		
 		private IDictionary<string, string> dockerContainerIds;
-		public BattleInfo BattleInfo { get; private set; }
+		public readonly BattleInfo battleInfo;
 
 		private async Task StartContainers()
 		{
@@ -45,20 +45,30 @@ namespace FightServer.Services.Implementations
 				}
 			}
 		}
-		
 
-		public async Task Start(CancellationToken cancellationToken)
+		public async Task<BattleInfo> Start(CancellationToken cancellationToken)
 		{
-			await this.storageClient.StartNewBattle(this.BattleInfo);
+			await this.storageClient.StartNewBattle(this.battleInfo);
 			
 			await this.StartContainers();
+
+#pragma warning disable 4014
+			this.StartMoves(cancellationToken);
+#pragma warning restore 4014
+
+			return this.battleInfo;
+		}
+		
+
+		public async Task StartMoves(CancellationToken cancellationToken)
+		{
 
 			uint i = 0;
 			while (!cancellationToken.IsCancellationRequested && !this.game.IsEnded())
 			{
-				await this.storageClient.AddFrame(this.BattleInfo.BattleId, new Frame
+				await this.storageClient.AddFrame(this.battleInfo.BattleId, new Frame
 				{
-					BattleId = this.BattleInfo.BattleId,
+					BattleId = this.battleInfo.BattleId,
 					GameState = this.game.State,
 					FrameNumber = i++,
 					DestroyedInfo = this.game.DestroyedObjects
@@ -67,9 +77,9 @@ namespace FightServer.Services.Implementations
 				await this.Tick();
 			}
 			
-			await this.storageClient.AddFrame(this.BattleInfo.BattleId, new Frame
+			await this.storageClient.AddFrame(this.battleInfo.BattleId, new Frame
 			{
-				BattleId = this.BattleInfo.BattleId,
+				BattleId = this.battleInfo.BattleId,
 				GameState = this.game.State,
 				FrameNumber = i++,
 				DestroyedInfo = this.game.DestroyedObjects
@@ -172,7 +182,7 @@ namespace FightServer.Services.Implementations
 		public Battle(BattleSettings battleSettings, ICollection<string> dockerImages,
 			IDockerService dockerService, IStorageClient storageClient, ILogger<Battle> logger)
 		{ 
-			this.BattleInfo = new BattleInfo
+			this.battleInfo = new BattleInfo
 				{
 					BattleId = Guid.NewGuid().ToString(),
 					Map = battleSettings.Map
@@ -183,7 +193,7 @@ namespace FightServer.Services.Implementations
 			this.dockerImages = dockerImages;
 			var gameSettings = GameSettings.Default;
 			gameSettings.ZoneRadius = battleSettings.ZoneRadius;
-			this.game = new Game(dockerImages, this.LoadMap(this.BattleInfo), GameSettings.Default);
+			this.game = new Game(dockerImages, this.LoadMap(this.battleInfo), GameSettings.Default);
 		}
 	}
 }
