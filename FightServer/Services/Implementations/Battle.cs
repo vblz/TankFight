@@ -62,7 +62,7 @@ namespace FightServer.Services.Implementations
 
 		public async Task StartMoves(CancellationToken cancellationToken)
 		{
-
+			await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
 			uint i = 0;
 			while (!cancellationToken.IsCancellationRequested && !this.game.IsEnded())
 			{
