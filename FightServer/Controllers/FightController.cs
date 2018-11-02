@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FightServer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace FightServer.Controllers
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public IActionResult StartNew([FromBody] string[] dockerImages)
+    public async Task<IActionResult> StartNew([FromBody] string[] dockerImages)
     {
       if (dockerImages == null || dockerImages.Length == 0)
       {
@@ -35,7 +36,7 @@ namespace FightServer.Controllers
         return this.BadRequest();
       }
 
-      var battleInfo = this.battleService.StartNew(dockerImagesSet);
+      var battleInfo = await this.battleService.StartNew(dockerImagesSet);
 
       return this.Ok(battleInfo);
     }
