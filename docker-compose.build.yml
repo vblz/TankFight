@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  storage:
+    build:
+      context: .
+      dockerfile: StorageService/Dockerfile 
+      
+  fight:
+    build:
+      context: .
+      dockerfile: FightServer/Dockerfile
+
+  unity:
+    build:
+      context: ../TankFightUnity/Build
+      dockerfile: ../Dockerfile
+      
+  randombot:
+    build:
+      context: ./RandomBot
+      
+  rubot:
+    build:
+      context: ./RuBot

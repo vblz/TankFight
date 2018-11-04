@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  storage:
+    depends_on:
+      - mongo
+    container_name: "storage"
+    image: vblz/tanks:storage
+    
+  mongo:
+    image: mongo:3.4
+    volumes:
+      - mongo_volume:/data/db
+
+  fight:
+    image: vblz/tanks:fight
+    container_name: "fight"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - storage
+    environment:
+      - ContainerSettings__DontRemoveContainers=true
+
+  randombot:
+    image: vblz/tanks:randombot
+    entrypoint: /bin/true
+
+  rubot:
+    image: vblz/tanks:rubot
+    entrypoint: /bin/true
+
+  unity:
+    image: vblz/tanks:unity
+    container_name: "unity"
+    ports:
+      - "5006:80"
+    depends_on:
+      - storage
+      - fight
+      
+volumes:
+  mongo_volume:
