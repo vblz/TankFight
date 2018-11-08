@@ -16,10 +16,12 @@ namespace RandomBot
         {
             Console.CancelKeyPress += (sender, eventArgs) => cts.Cancel();
             var ct = cts.Token;
+            int moveNumber = 0;
             
             while (!ct.IsCancellationRequested)
             {
                 var state = Console.ReadLine();
+                Thread.Sleep(50);
                 Console.WriteLine(JsonConvert.SerializeObject(new UserAction[]
                 {
                     new UserAction()
@@ -28,6 +30,7 @@ namespace RandomBot
                         Type = random.Next(100) > MovePercent ? UserActionType.Shoot : UserActionType.Move
                     }
                 }));
+                Console.Error.WriteLine("Move number {0}", moveNumber++);
             }
         }
     }

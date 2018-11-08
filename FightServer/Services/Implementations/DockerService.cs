@@ -18,7 +18,6 @@ namespace FightServer.Services.Implementations
 {
   public class DockerService : IDockerService
   {
-    private static readonly TimeSpan timeForContainerResponse = TimeSpan.FromSeconds(5);
     private static readonly byte NewLineChar = (byte)'\n'; // ASCII
 
     private readonly IDockerClient dockerClient;
@@ -51,7 +50,7 @@ namespace FightServer.Services.Implementations
       }
     }
 
-    public async Task<string> AskContainer(string containerId, string stdIn)
+    public async Task<string> AskContainer(string containerId, string stdIn, TimeSpan maxAnswerTime)
     {
       using (var attachStream = await this.dockerClient.Containers.AttachContainerAsync(containerId, false,
         new ContainerAttachParameters
@@ -64,10 +63,10 @@ namespace FightServer.Services.Implementations
         var writeBuffer = Encoding.UTF8.GetBytes(stdIn);
         await attachStream.WriteAsync(writeBuffer, 0, writeBuffer.Length, CancellationToken.None);
 
-        var cts = new CancellationTokenSource(timeForContainerResponse);
+        var cts = new CancellationTokenSource(maxAnswerTime);
 
         var stdOutTask = this.ReadLineAsync(attachStream, cts.Token);
-        await Task.WhenAny(stdOutTask, Task.Delay(timeForContainerResponse));
+        await Task.WhenAny(stdOutTask, Task.Delay(maxAnswerTime));
 
         if (!stdOutTask.IsCompletedSuccessfully)
         {

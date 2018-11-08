@@ -24,6 +24,8 @@ namespace FightServer.Services.Implementations
 		private readonly Game game;
 		private readonly ILogger<Battle> logger;
 		private readonly IStorageClient storageClient;
+		private readonly TimeSpan warmDelay;
+		private readonly TimeSpan answerDelay;
 		
 		private IDictionary<string, string> dockerContainerIds;
 		public readonly BattleInfo battleInfo;
@@ -62,7 +64,7 @@ namespace FightServer.Services.Implementations
 
 		public async Task StartMoves(CancellationToken cancellationToken)
 		{
-			await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+			await Task.Delay(this.warmDelay, cancellationToken);
 			uint i = 0;
 			while (!cancellationToken.IsCancellationRequested && !this.game.IsEnded())
 			{
@@ -81,7 +83,7 @@ namespace FightServer.Services.Implementations
 			{
 				BattleId = this.battleInfo.BattleId,
 				GameState = this.game.State,
-				FrameNumber = i++,
+				FrameNumber = i,
 				DestroyedInfo = this.game.DestroyedObjects
 			});
 
@@ -115,9 +117,9 @@ namespace FightServer.Services.Implementations
 			// делай все правильно или умри
 			try
 			{
-				var answer = await this.dockerService.AskContainer(containerId, state);
+				var answer = await this.dockerService.AskContainer(containerId, state, this.answerDelay);
 				UserAction[] actions = JsonConvert.DeserializeObject<UserAction[]>(answer);
-				return new UserMove(new ReadOnlyCollection<IAction>(actions), this.dockerContainerIds[containerId]);
+				return new UserMove(new ReadOnlyCollection<UserAction>(actions), this.dockerContainerIds[containerId]);
 			}
 			catch (Exception ex)
 			{
@@ -138,10 +140,10 @@ namespace FightServer.Services.Implementations
 			return null;
 		}
 
-		private IMapInfo LoadMap(BattleInfo battleInfo)
+		private IMapInfo LoadMap(BattleInfo loadingBattleInfo)
 		{
 			// FIXME код из TestConsole. Отрефакторить. 
-			var data =  JsonConvert.DeserializeObject<JObject>(File.ReadAllText(Path.Combine(battleInfo.Map, "objects.json")));
+			var data =  JsonConvert.DeserializeObject<JObject>(File.ReadAllText(Path.Combine(loadingBattleInfo.Map, "objects.json")));
 			var map = new MapInfo
 			{
 				Height = data["Height"].Value<byte>(),
@@ -187,6 +189,10 @@ namespace FightServer.Services.Implementations
 					BattleId = Guid.NewGuid().ToString(),
 					Map = battleSettings.Map
 				};
+
+			this.warmDelay = TimeSpan.FromSeconds(battleSettings.ContainersWarmSeconds);
+			this.answerDelay = TimeSpan.FromMilliseconds(battleSettings.ContainersAnswerMilliseconds);
+			
 			this.dockerService = dockerService;
 			this.logger = logger;
 			this.storageClient = storageClient;
