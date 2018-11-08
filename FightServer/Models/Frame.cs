@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GameLogic.Interfaces.Public;
 
 namespace FightServer.Models
@@ -8,5 +9,6 @@ namespace FightServer.Models
 		public uint FrameNumber { get; set; }
 		public IGameState GameState { get; set; }
 		public IDestroyedInfo DestroyedInfo { get; set; }
+		public IReadOnlyDictionary<string, string> BotsOutput { get; set; }
 	}
 }

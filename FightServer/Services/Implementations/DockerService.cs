@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using FightServer.Exceptions;
+using FightServer.Models;
 using FightServer.Services.Interfaces;
 using FightServer.Settings;
 using Microsoft.EntityFrameworkCore.Update.Internal;
@@ -50,14 +51,15 @@ namespace FightServer.Services.Implementations
       }
     }
 
-    public async Task<string> AskContainer(string containerId, string stdIn, TimeSpan maxAnswerTime)
+    public async Task<ContainerOutput> AskContainer(string containerId, string stdIn, TimeSpan maxAnswerTime)
     {
       using (var attachStream = await this.dockerClient.Containers.AttachContainerAsync(containerId, false,
         new ContainerAttachParameters
         {
           Stream = true,
           Stdin = true,
-          Stdout = true
+          Stdout = true,
+          Stderr = true
         }))
       {
         var writeBuffer = Encoding.UTF8.GetBytes(stdIn);
@@ -75,7 +77,7 @@ namespace FightServer.Services.Implementations
         }
 
         var result = await stdOutTask;
-        if (string.IsNullOrEmpty(result))
+        if (string.IsNullOrEmpty(result?.StdOut))
         {
           throw new ContainerAnswerException("Контейнер ответил пустой строкой");
         }
@@ -84,9 +86,10 @@ namespace FightServer.Services.Implementations
       }
     }
 
-    public async Task<string> ReadLineAsync(MultiplexedStream multiplexedStream, CancellationToken cancellationToken)
+    public async Task<ContainerOutput> ReadLineAsync(MultiplexedStream multiplexedStream, CancellationToken cancellationToken)
     {
-      List<byte> received = new List<byte>();
+      List<byte> receiverStdOut = new List<byte>();
+      List<byte> receiverStdErr = new List<byte>();
       byte[] buffer = new byte[15];
 
       while (!cancellationToken.IsCancellationRequested)
@@ -94,6 +97,11 @@ namespace FightServer.Services.Implementations
         var readResult =
           await multiplexedStream.ReadOutputAsync(buffer, 0, buffer.Length, cancellationToken);
 
+        if (readResult.Target == MultiplexedStream.TargetStream.StandardError)
+        {
+          receiverStdErr.AddRange(buffer.Take(readResult.Count));
+        }
+        
         if (readResult.Target != MultiplexedStream.TargetStream.StandardOut)
         {
           continue;
@@ -112,14 +120,27 @@ namespace FightServer.Services.Implementations
 
         if (newLineIndex != -1)
         {
-          received.AddRange(buffer.Take(newLineIndex));
+          receiverStdOut.AddRange(buffer.Take(newLineIndex));
           break;
         }
 
-        received.AddRange(buffer.Take(readResult.Count));
+        receiverStdOut.AddRange(buffer.Take(readResult.Count));
       }
 
-      return Encoding.UTF8.GetString(received.ToArray());
+      var result = new ContainerOutput();
+
+      try
+      {
+        result.StdErr = Encoding.ASCII.GetString(receiverStdErr.ToArray());
+      }
+      catch (Exception ex)
+      {
+        this.logger.LogWarning(ex, "Ошибка при чтении stderr");
+      }
+      
+      result.StdOut = Encoding.ASCII.GetString(receiverStdOut.ToArray());
+
+      return result;
     }
 
     private async Task<string> CreateContainer(string imageName)

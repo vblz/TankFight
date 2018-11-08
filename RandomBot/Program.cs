@@ -21,7 +21,11 @@ namespace RandomBot
             while (!ct.IsCancellationRequested)
             {
                 var state = Console.ReadLine();
-                Thread.Sleep(50);
+                
+                Console.Error.WriteLine("Move number {0}", moveNumber++);
+                // следующий тред слип нужен, чтобы stderr долетел раньше stdout
+                Thread.Sleep(10);
+                
                 Console.WriteLine(JsonConvert.SerializeObject(new UserAction[]
                 {
                     new UserAction()
@@ -30,7 +34,6 @@ namespace RandomBot
                         Type = random.Next(100) > MovePercent ? UserActionType.Shoot : UserActionType.Move
                     }
                 }));
-                Console.Error.WriteLine("Move number {0}", moveNumber++);
             }
         }
     }

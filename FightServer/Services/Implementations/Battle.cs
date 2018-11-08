@@ -60,32 +60,20 @@ namespace FightServer.Services.Implementations
 
 			return this.battleInfo;
 		}
-		
 
 		public async Task StartMoves(CancellationToken cancellationToken)
 		{
 			await Task.Delay(this.warmDelay, cancellationToken);
 			uint i = 0;
+			IReadOnlyDictionary<string, string> debugOutput = null;
 			while (!cancellationToken.IsCancellationRequested && !this.game.IsEnded())
 			{
-				await this.storageClient.AddFrame(this.battleInfo.BattleId, new Frame
-				{
-					BattleId = this.battleInfo.BattleId,
-					GameState = this.game.State,
-					FrameNumber = i++,
-					DestroyedInfo = this.game.DestroyedObjects
-				});
+				await this.storageClient.AddFrame(this.battleInfo.BattleId, this.BuildFrame(i++, debugOutput));
 				
-				await this.Tick();
+				debugOutput = await this.Tick();
 			}
 			
-			await this.storageClient.AddFrame(this.battleInfo.BattleId, new Frame
-			{
-				BattleId = this.battleInfo.BattleId,
-				GameState = this.game.State,
-				FrameNumber = i,
-				DestroyedInfo = this.game.DestroyedObjects
-			});
+			await this.storageClient.AddFrame(this.battleInfo.BattleId, this.BuildFrame(i, debugOutput));
 
 			foreach (var containerId in this.dockerContainerIds.Keys)
 			{
@@ -100,30 +88,41 @@ namespace FightServer.Services.Implementations
 			}
 		}
 
-		private async Task Tick()
+		private async Task<IReadOnlyDictionary<string, string>> Tick()
 		{
 			var state = JsonConvert.SerializeObject(this.game.State) + "\n";
-			var movesTasks = this.dockerContainerIds
-				.Select(x => this.ReadMove(state, x.Key));
 			
-			var moves = (await Task.WhenAll(movesTasks))
-				.Where(x => x != null);
+			// Key - имя бота, значение - ход из контейнера
+			var botOutputsTask = Task.WhenAll(this.dockerContainerIds
+					.Select(async x => new { Key = x.Value, Value = await this.ReadMove(state, x.Key)}));
 			
-			this.game.Tick(new ReadOnlyCollection<IUserMove>(moves.ToList()));
+			var botOutputs = (await botOutputsTask)
+				.Where(x => x.Value != null)
+				.ToDictionary(x => x.Key, x => x.Value);
+
+			var moves = botOutputs.Select(x => x.Value.Move).ToList();
+			this.game.Tick(new ReadOnlyCollection<IUserMove>(moves));
+
+			return botOutputs
+				.ToDictionary(x => x.Key, x => x.Value.DebugOutput);
 		}
 
-		private async Task<IUserMove> ReadMove(string state, string containerId)
+		private async Task<BotOutput> ReadMove(string state, string containerId)
 		{
 			// делай все правильно или умри
 			try
 			{
 				var answer = await this.dockerService.AskContainer(containerId, state, this.answerDelay);
-				UserAction[] actions = JsonConvert.DeserializeObject<UserAction[]>(answer);
-				return new UserMove(new ReadOnlyCollection<UserAction>(actions), this.dockerContainerIds[containerId]);
+				UserAction[] actions = JsonConvert.DeserializeObject<UserAction[]>(answer.StdOut);
+				return new BotOutput
+				{
+					Move = new UserMove(new ReadOnlyCollection<UserAction>(actions), this.dockerContainerIds[containerId]),
+					DebugOutput = answer.StdErr
+				};
 			}
 			catch (Exception ex)
 			{
-				this.logger.LogInformation(ex, "Ошибка при попытке получить ввод");
+				this.logger.LogWarning(ex, "Ошибка при попытке получить ввод");
 				
 				try
 				{
@@ -139,6 +138,15 @@ namespace FightServer.Services.Implementations
 			
 			return null;
 		}
+
+		private Frame BuildFrame(uint frameNumber, IReadOnlyDictionary<string, string> botsOutput) => new Frame
+		{
+			BattleId = this.battleInfo.BattleId,
+			GameState = this.game.State,
+			FrameNumber = frameNumber,
+			DestroyedInfo = this.game.DestroyedObjects,
+			BotsOutput = botsOutput
+		};
 
 		private IMapInfo LoadMap(BattleInfo loadingBattleInfo)
 		{
@@ -181,7 +189,7 @@ namespace FightServer.Services.Implementations
 			return map;
 		}
 
-		public Battle(BattleSettings battleSettings, ICollection<string> dockerImages,
+		public Battle(BattleSettings battleSettings, ISet<string> dockerImages,
 			IDockerService dockerService, IStorageClient storageClient, ILogger<Battle> logger)
 		{ 
 			this.battleInfo = new BattleInfo

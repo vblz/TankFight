@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FightServer.Models;
 
 namespace FightServer.Services.Interfaces
 {
@@ -15,6 +16,6 @@ namespace FightServer.Services.Interfaces
 		Task StopContainer(string containerId);
 
 		// не забыть про таймаут
-		Task<string> AskContainer(string containerId, string stdIn, TimeSpan maxAnswerTime);
+		Task<ContainerOutput> AskContainer(string containerId, string stdIn, TimeSpan maxAnswerTime);
 	}
 }
