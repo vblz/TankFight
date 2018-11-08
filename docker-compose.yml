@@ -21,7 +21,7 @@ services:
       - storage
     environment:
       - ContainerSettings__DontRemoveContainers=true
-      - BattleSettings__ContainersWarmSeconds=30
+      - BattleSettings__ContainersWarmSeconds=5
 
   randombot:
     image: vblz/tanks:randombot
