@@ -20,7 +20,7 @@ services:
     depends_on:
       - storage
     environment:
-      - ContainerSettings__DontRemoveContainers=true
+      - ContainerSettings__DontRemoveContainers=false
       - BattleSettings__ContainersWarmSeconds=5
 
   randombot:
