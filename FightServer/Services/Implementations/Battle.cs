@@ -90,11 +90,9 @@ namespace FightServer.Services.Implementations
 
 		private async Task<IReadOnlyDictionary<string, string>> Tick()
 		{
-			var state = JsonConvert.SerializeObject(this.game.State) + "\n";
-			
 			// Key - имя бота, значение - ход из контейнера
 			var botOutputsTask = Task.WhenAll(this.dockerContainerIds
-					.Select(async x => new { Key = x.Value, Value = await this.ReadMove(state, x.Key)}));
+					.Select(async x => new { Key = x.Value, Value = await this.ReadMove(this.game.State, x.Key, x.Value)}));
 			
 			var botOutputs = (await botOutputsTask)
 				.Where(x => x.Value != null)
@@ -107,12 +105,25 @@ namespace FightServer.Services.Implementations
 				.ToDictionary(x => x.Key, x => x.Value.DebugOutput);
 		}
 
-		private async Task<BotOutput> ReadMove(string state, string containerId)
+		private async Task<BotOutput> ReadMove(IGameState state, string containerId, string botName)
 		{
-			// делай все правильно или умри
-			try
+      // тороплюсь, делаем "Clone" таким странным способом
+		  var deserializedState = JsonConvert.DeserializeObject<JObject>(JsonConvert.SerializeObject(state));
+
+		  foreach (var cellContentInfo in deserializedState["ContentsInfo"])
+		  {
+		    if (cellContentInfo["UserId"] != null && cellContentInfo.Value<string>("UserId") != botName)
+		    {
+		      cellContentInfo["UserId"] = Guid.NewGuid().ToString();
+		    }
+		  }
+
+      var stateString = JsonConvert.SerializeObject(deserializedState) + "\n";
+
+      // делай все правильно или умри
+      try
 			{
-				var answer = await this.dockerService.AskContainer(containerId, state, this.answerDelay);
+				var answer = await this.dockerService.AskContainer(containerId, stateString, this.answerDelay);
 				UserAction[] actions = JsonConvert.DeserializeObject<UserAction[]>(answer.StdOut);
 				return new BotOutput
 				{

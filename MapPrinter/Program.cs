@@ -97,6 +97,8 @@ namespace MapPrinter
 			
 			var extendedMap = BuildMap(@"d:/maps/1/objects.json", true);
 			Print(extendedMap);
+
+			Console.ReadKey();
 		}
 	}
 }
