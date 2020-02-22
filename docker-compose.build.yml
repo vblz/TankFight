@@ -18,8 +18,8 @@ services:
       
   randombot:
     build:
-      context: ./RandomBot
+      context: BotsExamples/RandomBot
       
   rubot:
     build:
-      context: ./RuBot
+      context: BotsExamples/RuBot
